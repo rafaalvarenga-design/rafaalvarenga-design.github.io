@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<script src="coi-serviceworker.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Ampliar imagem – Lumina</title>
+<link rel="stylesheet" href="ui.css">
+<style>/* tela inicial */
+#v1{flex:1;display:flex;flex-direction:column;min-height:100vh}
+.home{flex:1;display:grid;place-items:center;padding:var(--s5) var(--s4) var(--s6);animation:in 200ms var(--ease)}
+.home-in{width:100%;max-width:560px;display:flex;flex-direction:column;align-items:center;gap:var(--s4);text-align:center}
+.sw{position:relative;display:grid;grid-template-columns:repeat(3,1fr);width:min(100%,380px);padding:4px;border-radius:999px}
+.sw input{position:absolute;opacity:0;pointer-events:none}
+.sw label{position:relative;z-index:1;height:var(--h);display:grid;place-items:center;border-radius:999px;cursor:pointer;font-weight:550;color:var(--mut);transition:color .2s}
+.sw input:checked+label{color:var(--ink)}.sw input:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
+.thumb{position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px)/3);border-radius:999px;background:var(--brand);transition:transform .25s var(--ease)}
+#t2:checked~.thumb{transform:translateX(100%)}#t3:checked~.thumb{transform:translateX(200%)}
+.drop{width:100%;padding:var(--s6) var(--s5);text-align:center;border-style:dashed;border-color:rgba(1,30,62,.28);cursor:pointer;display:grid;gap:4px;place-items:center;transition:background .2s,transform .2s}
+.drop:hover,.drop.over{background:var(--glass-hi)}.drop.over{transform:scale(1.01)}
+.drop b{font-size:18px;font-weight:600}.drop .hint{font-size:14px}
+#thumb{display:none;max-height:180px;max-width:100%;border-radius:var(--r);margin-bottom:var(--s2)}
+.opts{width:100%;padding:var(--s5);display:grid;gap:var(--s4);text-align:left}
+.two{display:grid;grid-template-columns:auto 1fr;gap:var(--s5)}@media(max-width:520px){.two{grid-template-columns:1fr}}
+fieldset{border:0;padding:0;min-width:0}legend{font-size:13px;color:var(--mut);margin-bottom:var(--s2);padding:0}
+.seg{display:flex;gap:var(--s2)}.seg label{position:relative;cursor:pointer}.seg input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.seg span{height:var(--h);padding:0 var(--s4);display:flex;align-items:center;gap:var(--s2);border-radius:var(--r);background:var(--glass-hi);border:1px solid var(--stroke);font-weight:550;white-space:nowrap}
+.seg input:checked+span{background:var(--brand);border-color:transparent}.seg input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.foot{background:var(--brand);text-align:center;padding:14px var(--s5);font-weight:500}
+/* editor */
+#v2{height:100dvh;display:grid;grid-template-columns:minmax(0,1fr) 320px;grid-template-rows:64px minmax(0,1fr);gap:var(--s4);padding:var(--s4);--ih:calc(100dvh - 120px);--iw:calc(100vw - 368px);animation:in 200ms var(--ease)}
+#top{grid-column:1/-1;display:flex;align-items:center;gap:var(--s3);padding:0 var(--s4);border-radius:18px}
+#top .logo{width:36px;height:36px;border-radius:10px}#top b{font-size:16px;font-weight:650;margin-right:auto}
+#stage{position:relative;display:grid;place-items:center;min-width:0;min-height:0;overflow:hidden}
+#cmp{position:relative;width:fit-content;border-radius:16px;overflow:hidden;line-height:0;touch-action:none;user-select:none;cursor:ew-resize;box-shadow:var(--shadow);background:#011E3E}
+#before{display:block;width:auto;height:auto;max-width:var(--iw);max-height:var(--ih);transform-origin:0 0;pointer-events:none;-webkit-user-drag:none}
+#after{position:absolute;inset:0;clip-path:inset(0 0 0 50%)}#afterCv{display:block;width:100%;height:100%;pointer-events:none;transform-origin:0 0}
+#hit{position:absolute;top:0;bottom:0;left:50%;width:44px;margin-left:-22px;cursor:ew-resize;z-index:2;touch-action:none}
+#hit:focus-visible{outline-offset:-2px}
+#line{position:absolute;top:0;bottom:0;left:50%;width:2px;margin-left:-1px;background:#fff;box-shadow:0 0 0 1px rgba(1,30,62,.4);pointer-events:none}
+#knob{position:absolute;top:50%;left:50%;width:36px;height:36px;margin:-18px;border-radius:50%;background:var(--brand);color:var(--ink);display:grid;place-items:center;box-shadow:0 2px 10px rgba(1,30,62,.4);pointer-events:none}
+.tag{position:absolute;top:10px;padding:2px 10px;border-radius:99px;background:rgba(1,30,62,.7);color:#fff;font-size:12px;line-height:1.6;pointer-events:none;z-index:1}
+#zoom{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:2px;padding:4px;border-radius:14px;z-index:3}
+.zb{appearance:none;font:inherit;font-weight:550;height:32px;min-width:44px;border:0;background:none;border-radius:10px;cursor:pointer;color:var(--ink)}.zb[aria-pressed=true]{background:var(--brand)}
+#prog{position:absolute;inset:0;z-index:5;background:rgba(236,239,246,.85)}
+.pbox{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(380px,86%);padding:var(--s5);display:grid;gap:var(--s3)}
+#bar{height:8px;border-radius:9px;background:rgba(1,30,62,.1);overflow:hidden}#bar i{display:block;position:relative;overflow:hidden;height:100%;width:0;border-radius:9px;background:var(--brand);transition:width .25s}
+}
+#msg{font-size:14px}#msg.err{color:var(--err)}
+#panel{padding:var(--s5);overflow:auto;align-content:start;min-height:0}
+.bg{margin-bottom:var(--s4)}.mini{height:6px;border-radius:9px;background:rgba(1,30,62,.1);overflow:hidden}.mini i{display:block;height:100%;width:0;background:var(--brand);transition:width .25s}
+.ctl{display:grid;gap:4px;margin-bottom:var(--s4)}.ch{display:flex;align-items:center;gap:var(--s2)}.kl{flex:1;font-size:13px;color:var(--mut)}
+.ch output{font-variant-numeric:tabular-nums;font-weight:600;font-size:13px}
+.ch button{appearance:none;width:32px;height:32px;display:grid;place-items:center;border:0;background:none;color:var(--mut);border-radius:8px;cursor:pointer}.ch button:hover{background:var(--glass-hi)}
+.ctl input{width:100%;accent-color:var(--accent)}.ends{display:flex;justify-content:space-between;color:var(--mut);font-size:12.5px}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2);margin:var(--s5) 0 var(--s4);padding-top:var(--s4);border-top:1px solid var(--stroke)}
+.badge{display:block;font-weight:600;margin-top:var(--s2)}
+.cdlg{border:1px solid var(--edge);padding:var(--s5);width:min(380px,calc(100vw - 32px));margin:auto;color:var(--ink);background:rgba(255,255,255,.93);display:none;flex-direction:column;gap:var(--s2)}
+.cdlg[open]{display:flex;animation:in 160ms var(--ease)}.cdlg::backdrop{background:rgba(1,30,62,.38)}
+.cdlg .row{display:flex;justify-content:flex-end;gap:var(--s2);margin-top:var(--s3)}
+@media(max-width:820px){#v2{grid-template-columns:minmax(0,1fr);grid-template-rows:64px minmax(0,1fr) auto;--ih:calc(100dvh - 64px - 44dvh - 72px);--iw:calc(100vw - 32px)}#panel{max-height:44dvh;padding:var(--s4)}}
+@media(max-width:480px){#top .btn{padding:0 var(--s3)}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div id="v1"><div class="home"><div class="home-in">
+<a class="logo lg" href="index.html" aria-label="Voltar para todas as ferramentas" title="Todas as ferramentas"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></svg></a>
+<h1 id="t1h" tabindex="-1">Ampliar imagem</h1>
+<p class="home-sub">Aumente a resolução e a nitidez das suas imagens.</p>
+<div class="sw glass" role="radiogroup" aria-label="Tipo de imagem">
+<input type="radio" id="t1" name="type" value="person" checked><label for="t1">Pessoas</label>
+<input type="radio" id="t2" name="type" value="anime"><label for="t2">Ilustração</label>
+<input type="radio" id="t3" name="type" value="art"><label for="t3">Pintura</label>
+<span class="thumb"></span></div>
+<div id="drop" class="glass drop" tabindex="0" role="button" aria-label="Escolher imagem"><img id="thumb" alt="Prévia da imagem escolhida"><b id="dropT">Arraste uma imagem ou clique para escolher</b><span id="dropS" class="hint">JPG, PNG ou WebP. Você também pode colar com Ctrl+V.</span></div>
+<input type="file" id="file" accept="image/*" hidden>
+<div class="opts glass"><div class="two">
+<fieldset><legend>Ampliar</legend><div class="seg"><label><input type="radio" name="scale" value="2" checked><span>2x</span></label><label><input type="radio" name="scale" value="4"><span>4x</span></label></div></fieldset>
+<fieldset><legend>Processar</legend><div class="seg">
+<label><input type="radio" name="mode" value="fast" checked><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>Local</span></label>
+<label><input type="radio" name="mode" value="max"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4 4 0 0 1-.5-7.97A6 6 0 0 1 18 9a4.5 4.5 0 0 1-.5 9z"/></svg>Online</span></label></div></fieldset></div>
+<p class="hint" id="modeHint">A imagem não sai do seu computador.</p>
+<button class="btn primary" id="go" disabled>Melhorar imagem</button></div>
+</div></div>
+<footer class="foot">Grátis e sem cadastro. No modo Online, a imagem é enviada a serviços de terceiros.</footer></div>
+
+<div id="v2" hidden>
+<header id="top" class="glass"><a class="logo" href="index.html" aria-label="Voltar para todas as ferramentas" title="Todas as ferramentas"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></svg></a><b id="t2h" tabindex="-1">Ampliar imagem</b><button id="reset" class="btn">Nova imagem</button><button id="dl" class="btn primary" disabled>Baixar</button></header>
+<section id="stage">
+<div id="cmp"><img id="before" alt="Imagem original" draggable="false"><div id="after"><canvas id="afterCv" role="img" aria-label="Imagem melhorada"></canvas></div>
+<div id="hit" tabindex="0" role="slider" aria-label="Comparar antes e depois" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><div id="line"></div><div id="knob" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6-6 6 6 6M15 6l6 6-6 6"/></svg></div></div>
+<span class="tag" style="left:10px">Antes</span><span class="tag" style="right:10px">Depois</span></div>
+<div id="zoom" class="glass" role="group" aria-label="Zoom"><button class="zb" data-z="1">1x</button><button class="zb" data-z="2">2x</button><button class="zb" data-z="4">4x</button><button class="zb" data-z="8">8x</button></div>
+<div id="prog" style="display:none" aria-live="polite"><div class="pbox glass"><div id="bar" role="progressbar" aria-label="Progresso" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div><p id="msg"></p><button id="cancel" class="btn">Cancelar</button><button id="back" class="btn" hidden>Voltar</button></div></div>
+</section>
+<aside id="panel" class="glass">
+<p class="hint" id="ph">Os ajustes aparecem quando a imagem ficar pronta.</p>
+<div id="texBox" style="display:none">
+<div class="ctl" id="mixRow" title="Esquerda: imagem mais limpa e suave. Direita: mais textura e detalhe"><div class="ch"><span class="kl">Nível de detalhe</span><output></output><button type="button" aria-label="Restaurar Nível de detalhe" title="Restaurar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg></button></div><input type="range" id="mix" min="0" max="100" value="50" aria-label="Nível de detalhe"><div class="ends"><span>Menos detalhe</span><span>Mais detalhe</span></div></div>
+<h3 style="margin-top:var(--s5)">Refino</h3>
+<div class="ctl" id="keepRow" title="Mantém o que já estava nítido e deixa a IA agir nas partes desfocadas"><div class="ch"><span class="kl">Nitidez original</span><output></output><button type="button" aria-label="Restaurar Nitidez original" title="Restaurar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg></button></div><input type="range" id="keep" min="0" max="100" value="40" aria-label="Nitidez original"></div>
+<div class="ctl" id="texRow" title="Devolve poros e grão natural da pele"><div class="ch"><span class="kl">Textura da pele</span><output></output><button type="button" aria-label="Restaurar Textura da pele" title="Restaurar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg></button></div><input type="range" id="tex" min="0" max="100" value="50" aria-label="Textura da pele"></div>
+<div class="ctl" id="lnRow" title="Realça contornos e linhas sem endurecer áreas lisas"><div class="ch"><span class="kl">Nitidez dos traços</span><output></output><button type="button" aria-label="Restaurar Nitidez dos traços" title="Restaurar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg></button></div><input type="range" id="ln" min="0" max="100" value="30" aria-label="Nitidez dos traços"></div>
+<div class="ctl" id="dnRow" title="Suaviza manchas e artefatos em áreas de cor lisa, preservando contornos"><div class="ch"><span class="kl">Limpar ruído</span><output></output><button type="button" aria-label="Restaurar Limpar ruído" title="Restaurar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg></button></div><input type="range" id="dn" min="0" max="100" value="25" aria-label="Limpar ruído"></div>
+<div class="acts"><button id="hold" class="btn" title="Mantenha pressionado para ver a imagem original">Ver original</button><button id="rall" class="btn">Restaurar</button></div>
+<p class="hint">Com zoom, arraste a imagem para mover e use a alça para comparar. Ctrl/⌘ + rolagem também amplia.</p>
+</div>
+<div style="margin-top:var(--s4)"><span class="badge" id="badge"></span><span class="hint" id="info"></span><p class="hint" id="dbg" style="margin-top:8px"></p></div>
+</aside>
+<dialog id="dlg" class="glass cdlg"><b style="font-size:16px">Começar com outra imagem?</b><p class="hint" style="font-size:14px">O resultado atual será descartado. Baixe antes se quiser guardá-lo.</p><div class="row"><button id="dno" class="btn">Voltar</button><button id="dok" class="btn primary">Descartar</button></div></dialog>
+</div>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s), val=n=>document.querySelector(`input[name=${n}]:checked`).value;
+/* Serviços do modo Online, tentados em ordem. Para trocar ou acrescentar um, edite esta lista (id do Space, rota da API e argumentos). */
+const DEFAULT_SPACES=[{id:"Nick088/Real-ESRGAN_Pytorch",api:"/predict",args:["$FILE","$MODEL",0.5,"$FACE","$SCALE"]}];
+const MODELS={person:"RealESRGAN_x4plus",anime:"RealESRGAN_x4plus_anime_6B",art:"RealESRGAN_x4plus"};
+let file=null,url=null,resultURL=null,upscaler=null;
+
+/* ---------- Escolha da imagem ---------- */
+const drop=$("#drop"),inp=$("#file");
+drop.onclick=()=>inp.click();
+drop.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();inp.click()}};
+inp.onchange=()=>inp.files[0]&&setFile(inp.files[0]);
+["dragover","dragenter"].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add("over")}));
+["dragleave","drop"].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove("over")}));
+drop.addEventListener("drop",e=>e.dataTransfer.files[0]&&setFile(e.dataTransfer.files[0]));
+addEventListener("paste",e=>{const f=[...(e.clipboardData?.files||[])].find(f=>f.type.startsWith("image/"));f&&setFile(f)});
+function setFile(f){
+  if(!f.type.startsWith("image/")){$("#dropS").textContent="Esse arquivo não é uma imagem. Escolha um JPG, PNG ou WebP.";return}
+  file=f;if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(f);
+  $("#thumb").src=url;$("#thumb").style.display="block";
+  $("#dropT").textContent=f.name;$("#dropS").textContent="Clique para trocar a imagem";
+  $("#go").disabled=false;
+}
+const MH={fast:"A imagem não sai do seu computador.",max:"Mais qualidade, mas pode haver fila. Se falhar, usamos o modo local."};
+document.querySelectorAll("input[name=mode]").forEach(r=>r.onchange=()=>$("#modeHint").textContent=MH[val("mode")]);
+
+/* ---------- Progresso ---------- */
+function say(t,cls="",show=true){$("#prog").style.display=show?"block":"none";const m=$("#msg");m.textContent=t;m.className=cls}
+function pct(p){p=Math.max(3,Math.min(100,p));$("#bar i").style.width=p+"%";$("#bar").setAttribute("aria-valuenow",Math.round(p))}
+
+/* ---------- Utilidades ---------- */
+const loadImg=src=>new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error("Não foi possível ler a imagem."));i.src=src});
+const loadScript=src=>new Promise((res,rej)=>{const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=()=>rej(new Error("Falha ao carregar "+src));document.head.appendChild(s)});
+const toBlob=c=>new Promise(r=>c.toBlob(r,"image/png"));
+const timeout=(p,ms)=>Promise.race([p,new Promise((_,r)=>setTimeout(()=>r(new Error("Tempo esgotado")),ms))]);
+const MAXSIDE=4096;
+
+/* Ampliação clássica (fallback): dobra em etapas + realce de nitidez */
+async function classic(img,scale,type){
+  let s=Math.min(scale,MAXSIDE/Math.max(img.width,img.height));if(s<1.01)s=1;
+  const tw=Math.round(img.width*s),th=Math.round(img.height*s);
+  let src=img,w=img.width,h=img.height;
+  while(w<tw||h<th){
+    w=Math.min(tw,w*2);h=Math.min(th,h*2);
+    const c=document.createElement("canvas");c.width=Math.round(w);c.height=Math.round(h);
+    const x=c.getContext("2d");x.imageSmoothingQuality="high";x.drawImage(src,0,0,c.width,c.height);src=c;
+  }
+  const c=document.createElement("canvas");c.width=tw;c.height=th;
+  const x=c.getContext("2d");x.imageSmoothingQuality="high";x.drawImage(src,0,0,tw,th);
+  sharpen(x,tw,th,type==="anime"?.9:type==="person"?.45:.6);
+  return toBlob(c);
+}
+function sharpen(ctx,w,h,amt){
+  const bl=blurC(ctx.canvas,2),a=ctx.getImageData(0,0,w,h),b=bl.getContext("2d").getImageData(0,0,w,h),s=a.data,t=b.data,k=amt*1.6;
+  for(let i=0;i<s.length;i+=4)for(let j=0;j<3;j++)s[i+j]=s[i+j]+k*(s[i+j]-t[i+j]);
+  ctx.putImageData(a,0,0);
+}
+
+/* ---------- Modo rápido (Real-ESRGAN no navegador, via ONNX Runtime Web) ---------- */
+const HF="https://huggingface.co/jonathanst29/tinier-upscale-models/resolve/main/";
+const SMALL="realesr-general-x4v3.onnx",BIG="realesrgan-x4plus.onnx";
+const sessions={};let ortP=null;
+function getOrt(){return ortP||(ortP=(async()=>{
+  const b="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/";
+  await loadScript(b+"ort.webgpu.min.js");ort.env.wasm.wasmPaths=b;ort.env.wasm.numThreads=self.crossOriginIsolated?Math.min(4,navigator.hardwareConcurrency||2):1;return ort})())}
+const idb=()=>new Promise((res,rej)=>{const q=indexedDB.open("lumina",1);q.onupgradeneeded=()=>q.result.createObjectStore("m");q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});
+async function dbGet(k){try{const d=await idb();return await new Promise(r=>{const q=d.transaction("m").objectStore("m").get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)})}catch{return null}}
+async function dbSet(k,v){try{const d=await idb();await new Promise(r=>{const t=d.transaction("m","readwrite");t.objectStore("m").put(v,k);t.oncomplete=t.onerror=t.onabort=()=>r()})}catch{}}
+async function getSession(name,wasmOnly){
+  const key=name+(wasmOnly?":w":"");if(sessions[key])return sessions[key];
+  const ort=await getOrt();
+  let buf=await dbGet(name);TM["modelo salvo "+(name===SMALL?"leve":"detalhado")]=buf?"sim":"não";
+  if(buf){buf=buf instanceof Uint8Array?buf:new Uint8Array(buf);say("Carregando o modelo salvo neste navegador…")}
+  else{
+    say("Baixando o modelo de IA (só na primeira vez)…");
+    const r=await fetch(HF+name);if(!r.ok)throw new Error("download "+r.status);
+    const len=+r.headers.get("content-length")||0,rd=r.body.getReader(),ch=[];let got=0;
+    for(;;){const{done,value}=await rd.read();if(done)break;ch.push(value);got+=value.length;if(len)pct(5+got/len*25)}
+    buf=new Uint8Array(got);let o=0;for(const c of ch){buf.set(c,o);o+=c.length}
+    await dbSet(name,buf);try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch{}
+  }
+  pct(32);say("Inicializando o modelo… (pode levar até 1 minuto)");
+  const mk=eps=>timeout(ort.InferenceSession.create(buf.slice(),{executionProviders:eps,graphOptimizationLevel:"basic"}),eps[0]==="webgpu"?45000:150000);
+  let sess;
+  if(!wasmOnly&&navigator.gpu){try{sess=await mk(["webgpu"]);sess.ep="webgpu"}catch(e){console.warn("WebGPU falhou",e)}}
+  if(!sess){say("Inicializando o modelo no processador… (pode levar até 2 minutos)");sess=await mk(["wasm"]);sess.ep="wasm"}
+  return sessions[key]=sess;
+}
+async function runModel(sess,img,onP){
+  const W=img.width,H=img.height,S=4,T=128,P=12;
+  const src=document.createElement("canvas");src.width=W;src.height=H;
+  const sx=src.getContext("2d",{willReadFrequently:true});sx.drawImage(img,0,0);
+  const px=sx.getImageData(0,0,W,H).data;
+  const out=document.createElement("canvas");out.width=W*S;out.height=H*S;const ox=out.getContext("2d");
+  const inN=sess.inputNames[0],outN=sess.outputNames[0],tx=Math.ceil(W/T),ty=Math.ceil(H/T);let n=0;
+  for(let j=0;j<ty;j++)for(let i=0;i<tx;i++){
+    if(tok.c)throw new Error("cancelado");
+    const x0=i*T,y0=j*T,x1=Math.min(W,x0+T),y1=Math.min(H,y0+T);
+    const a=Math.max(0,x0-P),b=Math.max(0,y0-P),c=Math.min(W,x1+P),d=Math.min(H,y1+P);
+    const w=c-a,h=d-b,pl=w*h,data=new Float32Array(3*pl);
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){const p=((b+y)*W+a+x)*4,q=y*w+x;data[q]=px[p]/255;data[pl+q]=px[p+1]/255;data[2*pl+q]=px[p+2]/255}
+    const res=await sess.run({[inN]:new ort.Tensor("float32",data,[1,3,h,w])});
+    const o=res[outN].data,ow=w*S,opl=ow*h*S,cw=(x1-x0)*S,chh=(y1-y0)*S,fx=(x0-a)*S,fy=(y0-b)*S;
+    const id=new ImageData(cw,chh),dd=id.data;
+    for(let y=0;y<chh;y++)for(let x=0;x<cw;x++){const q=(y+fy)*ow+x+fx,p=(y*cw+x)*4;dd[p]=o[q]*255;dd[p+1]=o[opl+q]*255;dd[p+2]=o[2*opl+q]*255;dd[p+3]=255}
+    ox.putImageData(id,x0*S,y0*S);if(onP(++n/(tx*ty))===false)throw new Error("lento");
+  }
+  return out;
+}
+function blurC(c,f){
+  const w=c.width,h=c.height,s=document.createElement("canvas");s.width=Math.max(1,Math.round(w/f));s.height=Math.max(1,Math.round(h/f));
+  const x=s.getContext("2d");x.imageSmoothingQuality="high";x.drawImage(c,0,0,s.width,s.height);
+  const b=document.createElement("canvas");b.width=w;b.height=h;const y=b.getContext("2d");y.imageSmoothingQuality="high";y.drawImage(s,0,0,w,h);return b;
+}
+function px(c,tw,th){const k=document.createElement("canvas");k.width=tw;k.height=th;const x=k.getContext("2d",{willReadFrequently:true});x.imageSmoothingQuality="high";x.drawImage(c,0,0,tw,th);return{k,d:x.getImageData(0,0,tw,th).data}}
+function maskCv(a){
+  if(a.g)return a.g;const img0=a.img||a.img0,w=img0.width,h=img0.height,g=document.createElement("canvas");g.width=w;g.height=h;
+  const gx=g.getContext("2d",{willReadFrequently:true});gx.drawImage(img0,0,0);
+  const o=gx.getImageData(0,0,w,h).data,L=new Float32Array(w*h),m=gx.createImageData(w,h),md=m.data;
+  for(let i=0;i<w*h;i++)L[i]=o[i*4]*.3+o[i*4+1]*.59+o[i*4+2]*.11;
+  for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const i=y*w+x,p=i*4,v=Math.min(255,(Math.abs(L[i+1]-L[i-1])+Math.abs(L[i+w]-L[i-w]))*5.3);md[p]=md[p+1]=md[p+2]=v;md[p+3]=255}
+  gx.putImageData(m,0,0);return a.g=g;
+}
+const DBG=location.hash==="#debug",TM={};
+const tm=(k,t)=>{TM[k]=(TM[k]||0)+performance.now()-t};
+function dbgShow(){if(DBG)$("#dbg").textContent=Object.entries(TM).map(([k,v])=>k+": "+(typeof v==="number"?(v/1000).toFixed(1)+"s":v)).join(" · ")}
+const maskBlur=a=>a.mb||(a.mb=blurC(maskCv(a),3));
+/* Camadas das linhas [ya,yb) de uma imagem alvo tw×th (com margem para os desfoques) */
+function layers(a,tw,th,ya,yb){
+  const m=24,y0=Math.max(0,ya-m),y1=Math.min(th,yb+m),h=y1-y0,{outs,img0}=a,s=tw/a.tw;
+  const cut=src=>{const c=document.createElement("canvas");c.width=tw;c.height=h;const x=c.getContext("2d",{willReadFrequently:true});x.imageSmoothingQuality="high";const k=src.height/th;x.drawImage(src,0,y0*k,src.width,h*k,0,0,tw,h);return{k:c,d:x.getImageData(0,0,tw,h).data}};
+  const R=cut(img0),S=cut(outs[0]);
+  return{tw,y0,S:S.d,B:outs[1]?cut(outs[1]).d:null,r:R.d,bl:px(blurC(R.k,Math.max(1,Math.max(2,a.tw/img0.width*1.5)*s)),tw,h).d,bs:px(blurC(S.k,Math.max(1,2*s)),tw,h).d,M:cut(maskBlur(a)).d};
+}
+/* Compõe as linhas y0..y0+h de camadas já preparadas */
+function region(P,o,T,x0,y0,w,h){
+  const id=new ImageData(w,h),d=id.data,{S,r,bl,M,bs,tw}=P,B=P.B||S;
+  const mix=P.B?o.mix:0,hp=T==="anime"?0:o.tex*1.2,gr=T==="person"?o.tex*10:T==="art"?o.tex*4:0,ln=T==="person"?0:o.ln*1.5,dn=T==="anime"?o.dn:0;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+    const i=((y0+y-P.y0)*tw+x0+x)*4,q=(y*w+x)*4,m=M[i]/255,k=o.keep*m;let g=0;
+    if(gr){const l=S[i]*.3+S[i+1]*.59+S[i+2]*.11;g=(Math.random()+Math.random()-1)*gr*(.3+.7*(1-Math.abs(l-128)/128))}
+    for(let j=0;j<3;j++){const v=S[i+j]+(B[i+j]-S[i+j])*mix,e=r[i+j]-bl[i+j];d[q+j]=v+k*(r[i+j]+.8*e-v)+hp*e+g+dn*(1-m)*(bs[i+j]-v)+ln*m*(S[i+j]-bs[i+j])}
+    d[q+3]=r[i+3];
+  }
+  return id;
+}
+const ZERO={mix:0,keep:0,tex:0,ln:0,dn:0};
+/* Arquivo final: tamanho total, processado em faixas para não estourar a memória */
+async function exportBlob(){
+  const{tw,th}=ai,o=ai.plain?ZERO:ctl(),c=document.createElement("canvas");c.width=tw;c.height=th;const x=c.getContext("2d");
+  for(let y=0;y<th;y+=512){const yb=Math.min(th,y+512);x.putImageData(region(layers(ai,tw,th,y,yb),o,ai.type,0,y,tw,yb-y),0,y);await new Promise(r=>setTimeout(r))}
+  return toBlob(c);
+}
+/* Preview: tamanho grande e fixo, com teto e piso (nunca acima do tamanho final) */
+const MOBILE=/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)||(navigator.deviceMemory&&navigator.deviceMemory<=4);
+const PV_CAP=MOBILE?1920:2560,PV_FLOOR=1280;let pv=PV_CAP;
+function render(){cancelAnimationFrame(raf);raf=requestAnimationFrame(draw)}
+function draw(){
+  if(!ai)return;
+  const F=Math.max(ai.tw,ai.th),floor=Math.min(F,PV_FLOOR),L=Math.min(F,pv)/F,ptw=Math.round(ai.tw*L),pth=Math.round(ai.th*L);
+  if(ai.Pk!==ptw){const tl=performance.now();ai.P=layers(ai,ptw,pth,0,pth);ai.Pk=ptw;tm("preparar preview",tl)}
+  const cv=$("#afterCv");if(cv.width!==ptw||cv.height!==pth){cv.width=ptw;cv.height=pth}
+  const t0=performance.now();
+  cv.getContext("2d").putImageData(region(ai.P,ai.plain?ZERO:ctl(),ai.type,0,0,ptw,pth),0,0);
+  if(performance.now()-t0>220&&pv>floor){pv=Math.max(floor,Math.round(pv*.8));render()}
+  applyZ();dbgShow();
+}
+let ai=null,tt,raf=0,tok={c:false};
+const ctl=()=>({mix:$("#mix").value/100,keep:$("#keep").value/100,tex:$("#tex").value/100,ln:$("#ln").value/100,dn:$("#dn").value/100});
+async function runWith(name,img,onP){
+  const lb=name===SMALL?"leve":"detalhado";let t=performance.now();
+  let sess=await timeout(getSession(name),300000);tm("carregar "+lb,t);t=performance.now();
+  try{const o=await runModel(sess,img,onP);tm("IA "+lb,t);TM["motor "+lb]=sess.ep;return o}
+  catch(e){if(tok.c||e.message==="lento")throw e;console.warn("Acelerador falhou, usando CPU",e);sess=await getSession(name,true);const o=await runModel(sess,img,onP);tm("IA "+lb,t);TM["motor "+lb]="wasm";return o}
+}
+/* O sistema decide: modelo leve sempre; o detalhado só se o aparelho for rápido o bastante */
+async function local(f,scale,type){
+  const img0=await loadImg(url);
+  try{
+    say("Preparando a IA…");pct(4);
+    let img=img0;const big=Math.max(img0.width,img0.height);
+    if(big>1024){const r=1024/big,c=document.createElement("canvas");c.width=Math.round(img0.width*r);c.height=Math.round(img0.height*r);c.getContext("2d").drawImage(img0,0,0,c.width,c.height);img=c}
+    let ts=0;
+    const o1=await runWith(SMALL,img,p=>{if(!ts)ts=performance.now();pct(32+p*28);say(`Reconstruindo detalhes… ${Math.round(p*60)}%`)}),outs=[o1],fast=performance.now()-ts<20000;
+    if(fast&&sessions[SMALL]&&sessions[SMALL].ep==="webgpu"){
+      let tb=0,p0=0;
+      try{outs.push(await runWith(BIG,img,p=>{
+        if(!tb){tb=performance.now();p0=p}else if(p>p0+.08&&(performance.now()-tb)/(p-p0)>60000)return false;
+        pct(60+p*37);say(`Reconstruindo detalhes… ${Math.round(60+p*40)}%`)}))}
+      catch(e){if(tok.c)throw e;console.warn("Modelo detalhado dispensado",e)}
+    }
+    const k=Math.max(Math.min(scale,MAXSIDE/big),1),notes=[];
+    if(k<scale-.01)notes.push("limitado a 4096 px");if(big>1024)notes.push("IA aplicada a uma versão de 1024 px");
+    return{ai:{outs,img,img0,tw:Math.round(img0.width*k),th:Math.round(img0.height*k),type,note:notes.join(" · ")},method:"IA no navegador"};
+  }catch(e){
+    if(tok.c)throw e;
+    console.warn(e);say("A IA do navegador não funcionou. Usando ampliação clássica (sem reconstrução de detalhes)…","",true);pct(50);
+    return{blob:await classic(img0,scale,type),method:"ampliação clássica, sem IA ("+e.message+")"};
+  }
+}
+/* ---------- Modo qualidade máxima (Hugging Face Spaces) ---------- */
+function fill(args,f,scale,type){
+  return args.map(a=>a==="$FILE"?f:a==="$MODEL"?MODELS[type]:a==="$FACE"?type==="person":a==="$SCALE"?scale:a);
+}
+function findUrl(o){
+  if(!o)return null;if(typeof o==="string")return /^https?:/.test(o)?o:null;
+  if(o.url)return o.url;
+  for(const v of Object.values(o)){const r=findUrl(v);if(r)return r}return null;
+}
+async function maxQuality(f,scale,type){
+  const list=DEFAULT_SPACES;
+  const lib=await import("https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js");
+  const errs=[];
+  for(let i=0;i<list.length;i++){
+    const sp=list[i];say(`Enviando para o serviço ${i+1} de ${list.length} (${sp.id}). Pode haver fila…`);pct(15+i*10);
+    try{
+      const client=await timeout(lib.Client.connect(sp.id),30000);
+      const res=await timeout(client.predict(sp.api,fill(sp.args,lib.handle_file(f),scale,type)),180000);
+      const u=findUrl(res.data);if(!u)throw new Error("Resposta sem imagem");
+      let blob;try{blob=await (await fetch(u)).blob()}catch{throw new Error("Não foi possível baixar o resultado")}
+      return{blob,method:"IA online"};
+    }catch(e){if(tok.c)throw new Error("cancelado");errs.push(sp.id+": "+e.message);console.warn(sp.id,e)}
+  }
+  throw new Error(errs.join(" | ")||"Nenhum serviço respondeu");
+}
+
+/* ---------- Fluxo principal ---------- */
+$("#go").onclick=async()=>{
+  if(!file)return;
+  const type=val("type"),scale=+val("scale"),mode=val("mode");tok={c:false};const my=tok;
+  Object.keys(TM).forEach(k=>delete TM[k]);$("#go").disabled=true;ai=null;view(2);$("#back").hidden=true;$("#cancel").hidden=false;$("#texBox").style.display="none";$("#ph").hidden=false;$("#ph").textContent="Os ajustes aparecem quando a imagem ficar pronta.";
+  $("#before").src=url;$("#afterCv").getContext("2d").clearRect(0,0,1e4,1e4);$("#dl").disabled=true;move(50);setZ(1);pct(5);say("Preparando…");
+  try{
+    let r;
+    if(mode==="max"){
+      try{r=await maxQuality(file,scale,type)}
+      catch(e){if(my.c)throw e;say("Os serviços online não responderam. Usando o modo local…","",true);r=await local(file,scale,type);r.method+=" · alternativa ao modo online"}
+    }else r=await local(file,scale,type);
+    if(my.c)return;
+    await show(r,type);say("","",false);
+  }catch(e){if(my.c)return;say("Algo deu errado: "+e.message+" Tente outra imagem ou o modo local.","err");$("#back").hidden=false;$("#cancel").hidden=true}
+  $("#go").disabled=false;
+};
+async function show(r,type){
+  const img0=await loadImg(url);
+  if(r.ai)ai=r.ai;else{
+    const u=URL.createObjectURL(r.blob),im=await loadImg(u),c=document.createElement("canvas");c.width=im.width;c.height=im.height;c.getContext("2d").drawImage(im,0,0);URL.revokeObjectURL(u);
+    ai={outs:[c],img0,tw:im.width,th:im.height,type,plain:true};
+  }
+  $("#info").textContent=`${img0.width}×${img0.height} → ${ai.tw}×${ai.th}px`+(ai.note?` · ${ai.note}`:"");$("#badge").textContent=r.method;
+  const ctrl=!ai.plain;$("#texBox").style.display=ctrl?"block":"none";$("#ph").hidden=ctrl;$("#ph").textContent="Este resultado não tem ajustes.";
+  $("#mixRow").style.display=ai.outs.length>1?"":"none";setCtl();setZ(1);move(50);$("#dl").disabled=false;render();
+}
+let dv=50;
+function move(v){dv=+v;$("#after").style.clipPath=`inset(0 0 0 ${v}%)`;$("#hit").style.left=v+"%";$("#hit").setAttribute("aria-valuenow",Math.round(v))}
+const upd=()=>{if(ai&&!ai.plain)render()};
+["mix","keep","tex","ln","dn"].forEach(id=>$("#"+id).oninput=upd);
+function setCtl(){
+  if(!ai)return;const T=ai.type,v=(id,x)=>{$("#"+id).value=x;$("#"+id).parentElement.dataset.def=x};
+  $("#texRow").style.display=T==="anime"?"none":"";$("#lnRow").style.display=T==="person"?"none":"";$("#dnRow").style.display=T==="anime"?"":"none";
+  $("#texRow .kl").textContent=T==="art"?"Textura da pintura":"Textura da pele";
+  $("#texRow").title=T==="art"?"Realça pinceladas e a textura da tela ou do papel":"Devolve poros e grão natural da pele";
+  v("tex",T==="art"?40:50);v("ln",30);v("dn",25);v("keep",40);v("mix",50);
+  document.querySelectorAll(".ctl").forEach(k=>k.draw());
+}
+/* Zoom: o conteúdo se move sob a linha de comparação, que fica parada */
+const cmp=$("#cmp");let z=1,tx=0,ty=0,drag=null;
+function applyZ(){
+  const W=cmp.clientWidth,H=cmp.clientHeight;tx=Math.min(0,Math.max(W*(1-z),tx));ty=Math.min(0,Math.max(H*(1-z),ty));
+  const t=`translate(${tx}px,${ty}px) scale(${z})`,bf=$("#before"),cv=$("#afterCv");bf.style.transform=cv.style.transform=t;
+  bf.style.imageRendering=z*W/(bf.naturalWidth||W)>2?"pixelated":"auto";cv.style.imageRendering=z*W/(cv.width||W)>2?"pixelated":"auto";
+  cmp.style.cursor=z>1?"grab":"ew-resize";document.querySelectorAll(".zb").forEach(b=>b.setAttribute("aria-pressed",String(+b.dataset.z===Math.round(z*100)/100)));
+}
+function setZ(nz,cx,cy){
+  const W=cmp.clientWidth||1,H=cmp.clientHeight||1;cx=cx??W/2;cy=cy??H/2;const r=nz/z;tx=cx-(cx-tx)*r;ty=cy-(cy-ty)*r;z=nz;applyZ();
+}
+function setDiv(e){const r=cmp.getBoundingClientRect();move(Math.max(0,Math.min(100,(e.clientX-r.left)/r.width*100)))}
+document.querySelectorAll(".zb").forEach(b=>b.onclick=()=>setZ(+b.dataset.z));
+let mode=null;
+cmp.addEventListener("dragstart",e=>e.preventDefault());
+cmp.onpointerdown=e=>{e.preventDefault();cmp.setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY,tx,ty};
+  mode=(e.target.closest("#hit")||z===1)?"div":"pan";if(mode==="div")setDiv(e);else cmp.style.cursor="grabbing"};
+cmp.onpointermove=e=>{if(!drag)return;if(mode==="div")setDiv(e);else{tx=drag.tx+e.clientX-drag.x;ty=drag.ty+e.clientY-drag.y;applyZ()}};
+cmp.onpointerup=cmp.onpointercancel=()=>{drag=null;applyZ()};
+$("#hit").onkeydown=e=>{if(e.key==="ArrowLeft")move(Math.max(0,dv-2));else if(e.key==="ArrowRight")move(Math.min(100,dv+2));else return;e.preventDefault()};
+cmp.onwheel=e=>{if(!(e.ctrlKey||e.metaKey))return;e.preventDefault();const r=cmp.getBoundingClientRect();setZ(Math.min(8,Math.max(1,z*(e.deltaY<0?1.25:.8))),e.clientX-r.left,e.clientY-r.top)};
+addEventListener("resize",applyZ);
+function doReset(){tok.c=true;ai=null;file=null;$("#thumb").style.display="none";$("#dropT").textContent="Arraste uma imagem ou clique para escolher";$("#dropS").textContent="JPG, PNG ou WebP. Você também pode colar com Ctrl+V.";
+  $("#go").disabled=true;$("#prog").style.display="none";inp.value="";view(1)}
+$("#reset").onclick=()=>ai?$("#dlg").showModal():doReset();
+$("#dok").onclick=()=>{$("#dlg").close();doReset()};$("#dno").onclick=()=>$("#dlg").close();
+/* Painel de ajustes */
+function view(n){$("#v1").hidden=n!==1;$("#v2").hidden=n!==2;(n===1?$("#t1h"):$("#t2h")).focus({preventScroll:true})}
+document.querySelectorAll(".ctl").forEach(r=>{
+  const i=r.querySelector("input"),o=r.querySelector("output");r.dataset.def=i.getAttribute("value");
+  r.draw=()=>o.textContent=i.value;i.addEventListener("input",r.draw);r.draw();
+  r.querySelector("button").onclick=()=>{i.value=r.dataset.def;r.draw();i.dispatchEvent(new Event("input"))};
+});
+$("#rall").onclick=()=>document.querySelectorAll(".ctl button").forEach(b=>b.click());
+$("#back").onclick=()=>{$("#prog").style.display="none";view(1)};
+$("#cancel").onclick=()=>{tok.c=true;$("#prog").style.display="none";$("#go").disabled=false;view(1)};
+$("#dl").onclick=async()=>{
+  if(!ai)return;const b=$("#dl"),t=b.textContent;b.disabled=true;b.textContent="Preparando…";
+  try{const blob=await exportBlob(),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(file?file.name.replace(/\.[^.]+$/,""):"imagem")+"-lumina.png";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+  finally{b.textContent=t;b.disabled=false}
+};
+addEventListener("dragover",e=>e.preventDefault());
+addEventListener("drop",e=>{e.preventDefault();const f=e.dataTransfer.files[0];if(f&&!$("#v1").hidden)setFile(f)});
+const hold=$("#hold"),aft=$("#after"),hide=()=>aft.style.visibility="hidden",showA=()=>aft.style.visibility="";
+hold.onpointerdown=e=>{e.preventDefault();hide()};["pointerup","pointerleave","pointercancel"].forEach(t=>hold.addEventListener(t,showA));
+hold.onkeydown=e=>{if(e.key===" "||e.key==="Enter"){e.preventDefault();hide()}};hold.onkeyup=showA;hold.oncontextmenu=e=>e.preventDefault();
+</script>
+</body>
+</html>
