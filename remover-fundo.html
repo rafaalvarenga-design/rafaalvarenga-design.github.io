@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<script src="coi-serviceworker.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Remover fundo – Lumina</title>
+<link rel="stylesheet" href="ui.css">
+<style>/* tela inicial */
+#v1{flex:1;display:flex;flex-direction:column;min-height:100vh}
+.home{flex:1;display:grid;place-items:center;padding:var(--s5) var(--s4) var(--s6);animation:in 200ms var(--ease)}
+.home-in{width:100%;max-width:560px;display:flex;flex-direction:column;align-items:center;gap:var(--s4);text-align:center}
+.sw{position:relative;display:grid;grid-template-columns:repeat(3,1fr);width:min(100%,380px);padding:4px;border-radius:999px}
+.sw input{position:absolute;opacity:0;pointer-events:none}
+.sw label{position:relative;z-index:1;height:var(--h);display:grid;place-items:center;border-radius:999px;cursor:pointer;font-weight:550;color:var(--mut);transition:color .2s}
+.sw input:checked+label{color:var(--ink)}.sw input:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
+.thumb{position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px)/3);border-radius:999px;background:var(--brand);transition:transform .25s var(--ease)}
+#t2:checked~.thumb{transform:translateX(100%)}#t3:checked~.thumb{transform:translateX(200%)}
+.drop{width:100%;padding:var(--s6) var(--s5);text-align:center;border-style:dashed;border-color:rgba(1,30,62,.28);cursor:pointer;display:grid;gap:4px;place-items:center;transition:background .2s,transform .2s}
+.drop:hover,.drop.over{background:var(--glass-hi)}.drop.over{transform:scale(1.01)}
+.drop b{font-size:18px;font-weight:600}.drop .hint{font-size:14px}
+#thumb{display:none;max-height:180px;max-width:100%;border-radius:var(--r);margin-bottom:var(--s2)}
+.opts{width:100%;padding:var(--s5);display:grid;gap:var(--s4);text-align:left}
+.two{display:grid;grid-template-columns:auto 1fr;gap:var(--s5)}@media(max-width:520px){.two{grid-template-columns:1fr}}
+fieldset{border:0;padding:0;min-width:0}legend{font-size:13px;color:var(--mut);margin-bottom:var(--s2);padding:0}
+.seg{display:flex;gap:var(--s2)}.seg label{position:relative;cursor:pointer}.seg input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.seg span{height:var(--h);padding:0 var(--s4);display:flex;align-items:center;gap:var(--s2);border-radius:var(--r);background:var(--glass-hi);border:1px solid var(--stroke);font-weight:550;white-space:nowrap}
+.seg input:checked+span{background:var(--brand);border-color:transparent}.seg input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.foot{background:var(--brand);text-align:center;padding:14px var(--s5);font-weight:500}
+/* editor */
+#v2{height:100dvh;display:grid;grid-template-columns:minmax(0,1fr) 320px;grid-template-rows:64px minmax(0,1fr);gap:var(--s4);padding:var(--s4);--ih:calc(100dvh - 120px);--iw:calc(100vw - 368px);animation:in 200ms var(--ease)}
+#top{grid-column:1/-1;display:flex;align-items:center;gap:var(--s3);padding:0 var(--s4);border-radius:18px}
+#top .logo{width:36px;height:36px;border-radius:10px}#top b{font-size:16px;font-weight:650;margin-right:auto}
+#stage{position:relative;display:grid;place-items:center;min-width:0;min-height:0;overflow:hidden}
+#cmp{position:relative;width:fit-content;border-radius:16px;overflow:hidden;line-height:0;touch-action:none;user-select:none;cursor:ew-resize;box-shadow:var(--shadow);background:#011E3E}
+#before{display:block;width:auto;height:auto;max-width:var(--iw);max-height:var(--ih);transform-origin:0 0;pointer-events:none;-webkit-user-drag:none}
+#after{position:absolute;inset:0;clip-path:inset(0 0 0 50%)}#afterCv{display:block;width:100%;height:100%;pointer-events:none;transform-origin:0 0}
+#hit{position:absolute;top:0;bottom:0;left:50%;width:44px;margin-left:-22px;cursor:ew-resize;z-index:2;touch-action:none}
+#hit:focus-visible{outline-offset:-2px}
+#line{position:absolute;top:0;bottom:0;left:50%;width:2px;margin-left:-1px;background:#fff;box-shadow:0 0 0 1px rgba(1,30,62,.4);pointer-events:none}
+#knob{position:absolute;top:50%;left:50%;width:36px;height:36px;margin:-18px;border-radius:50%;background:var(--brand);color:var(--ink);display:grid;place-items:center;box-shadow:0 2px 10px rgba(1,30,62,.4);pointer-events:none}
+.tag{position:absolute;top:10px;padding:2px 10px;border-radius:99px;background:rgba(1,30,62,.7);color:#fff;font-size:12px;line-height:1.6;pointer-events:none;z-index:1}
+#zoom{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:2px;padding:4px;border-radius:14px;z-index:3}
+.zb{appearance:none;font:inherit;font-weight:550;height:32px;min-width:44px;border:0;background:none;border-radius:10px;cursor:pointer;color:var(--ink)}.zb[aria-pressed=true]{background:var(--brand)}
+#prog{position:absolute;inset:0;z-index:5;background:rgba(236,239,246,.85)}
+.pbox{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(380px,86%);padding:var(--s5);display:grid;gap:var(--s3)}
+#bar{height:8px;border-radius:9px;background:rgba(1,30,62,.1);overflow:hidden}#bar i{display:block;position:relative;overflow:hidden;height:100%;width:0;border-radius:9px;background:var(--brand);transition:width .25s}
+}
+#msg{font-size:14px}#msg.err{color:var(--err)}
+#panel{padding:var(--s5);overflow:auto;align-content:start;min-height:0}
+.bg{margin-bottom:var(--s4)}.mini{height:6px;border-radius:9px;background:rgba(1,30,62,.1);overflow:hidden}.mini i{display:block;height:100%;width:0;background:var(--brand);transition:width .25s}
+.ctl{display:grid;gap:4px;margin-bottom:var(--s4)}.ch{display:flex;align-items:center;gap:var(--s2)}.kl{flex:1;font-size:13px;color:var(--mut)}
+.ch output{font-variant-numeric:tabular-nums;font-weight:600;font-size:13px}
+.ch button{appearance:none;width:32px;height:32px;display:grid;place-items:center;border:0;background:none;color:var(--mut);border-radius:8px;cursor:pointer}.ch button:hover{background:var(--glass-hi)}
+.ctl input{width:100%;accent-color:var(--accent)}.ends{display:flex;justify-content:space-between;color:var(--mut);font-size:12.5px}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2);margin:var(--s5) 0 var(--s4);padding-top:var(--s4);border-top:1px solid var(--stroke)}
+.badge{display:block;font-weight:600;margin-top:var(--s2)}
+.cdlg{border:1px solid var(--edge);padding:var(--s5);width:min(380px,calc(100vw - 32px));margin:auto;color:var(--ink);background:rgba(255,255,255,.93);display:none;flex-direction:column;gap:var(--s2)}
+.cdlg[open]{display:flex;animation:in 160ms var(--ease)}.cdlg::backdrop{background:rgba(1,30,62,.38)}
+.cdlg .row{display:flex;justify-content:flex-end;gap:var(--s2);margin-top:var(--s3)}
+@media(max-width:820px){#v2{grid-template-columns:minmax(0,1fr);grid-template-rows:64px minmax(0,1fr) auto;--ih:calc(100dvh - 64px - 44dvh - 72px);--iw:calc(100vw - 32px)}#panel{max-height:44dvh;padding:var(--s4)}}
+@media(max-width:480px){#top .btn{padding:0 var(--s3)}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+#after.chk{background:repeating-conic-gradient(#E4E8F1 0 25%,#D5DAE6 0 50%) 0 0/20px 20px}
+input[type=color]{width:100%;height:var(--h);border:1px solid var(--stroke);border-radius:var(--r);background:var(--glass-hi);padding:4px;margin-top:var(--s2);cursor:pointer}
+.seg.wrap{flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div id="v1"><div class="home"><div class="home-in">
+<a class="logo lg" href="index.html" aria-label="Voltar para todas as ferramentas" title="Todas as ferramentas"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></svg></a>
+<h1 id="t1h" tabindex="-1">Remover fundo</h1>
+<p class="home-sub">Recorte pessoas e objetos e salve em PNG transparente.</p>
+<div id="drop" class="glass drop" tabindex="0" role="button" aria-label="Escolher imagem"><img id="thumb" alt="Prévia da imagem escolhida"><b id="dropT">Arraste uma imagem ou clique para escolher</b><span id="dropS" class="hint">JPG, PNG ou WebP. Você também pode colar com Ctrl+V.</span></div>
+<input type="file" id="file" accept="image/*" hidden>
+<p class="hint">A imagem não sai do seu computador. Na primeira vez, a IA é baixada e fica salva neste navegador.</p>
+</div></div><footer class="foot">Grátis e sem cadastro. Tudo é processado no seu navegador.</footer></div>
+
+<div id="v2" hidden>
+<header id="top" class="glass"><a class="logo" href="index.html" aria-label="Voltar para todas as ferramentas" title="Todas as ferramentas"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></svg></a><b id="t2h" tabindex="-1">Remover fundo</b><button id="reset" class="btn">Nova imagem</button><button id="dl" class="btn primary" disabled>Baixar</button></header>
+<section id="stage">
+<div id="cmp"><img id="before" alt="Imagem original" draggable="false"><div id="after" class="chk"><canvas id="afterCv" role="img" aria-label="Imagem sem fundo"></canvas></div>
+<div id="hit" tabindex="0" role="slider" aria-label="Comparar antes e depois" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><div id="line"></div><div id="knob" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6-6 6 6 6M15 6l6 6-6 6"/></svg></div></div>
+<span class="tag" style="left:10px">Antes</span><span class="tag" style="right:10px">Depois</span></div>
+<div id="zoom" class="glass" role="group" aria-label="Zoom"><button class="zb" data-z="1">1x</button><button class="zb" data-z="2">2x</button><button class="zb" data-z="4">4x</button><button class="zb" data-z="8">8x</button></div>
+<div id="prog" style="display:none" aria-live="polite"><div class="pbox glass"><div id="bar" role="progressbar" aria-label="Progresso" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div><p id="msg"></p><button id="cancel" class="btn">Cancelar</button><button id="back" class="btn" hidden>Voltar</button></div></div>
+</section>
+<aside id="panel" class="glass">
+<p class="hint" id="ph">Os ajustes aparecem quando o recorte ficar pronto.</p>
+<div id="texBox" style="display:none">
+<h3>Fundo</h3>
+<div class="seg wrap" role="radiogroup" aria-label="Fundo">
+<label><input type="radio" name="bg" value="t" checked><span>Transparente</span></label>
+<label><input type="radio" name="bg" value="w"><span>Branco</span></label>
+<label><input type="radio" name="bg" value="c"><span>Cor</span></label></div>
+<input type="color" id="bgc" value="#b79cff" aria-label="Cor do fundo" hidden>
+<h3 style="margin-top:var(--s5)">Recorte</h3>
+<div class="ctl" title="Negativo: recorta mais para dentro. Positivo: inclui mais da borda"><div class="ch"><span class="kl">Contorno</span><output></output><button type="button" aria-label="Restaurar Contorno" title="Restaurar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg></button></div><input type="range" id="cont" min="-50" max="50" value="0" aria-label="Contorno"></div>
+<div class="ctl" title="Baixa: borda nítida. Alta: transição mais suave"><div class="ch"><span class="kl">Suavidade da borda</span><output></output><button type="button" aria-label="Restaurar Suavidade da borda" title="Restaurar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg></button></div><input type="range" id="soft" min="0" max="100" value="25" aria-label="Suavidade da borda"></div>
+<div class="acts"><button id="hold" class="btn" title="Mantenha pressionado para ver a imagem original">Ver original</button><button id="rall" class="btn">Restaurar</button></div>
+<p class="hint">Com zoom, arraste a imagem para mover e use a alça para comparar. Ctrl/⌘ + rolagem também amplia.</p>
+</div>
+<div style="margin-top:var(--s4)"><span class="badge" id="badge"></span><span class="hint" id="info"></span></div>
+</aside>
+<dialog id="dlg" class="glass cdlg"><b style="font-size:16px">Começar com outra imagem?</b><p class="hint" style="font-size:14px">O resultado atual será descartado. Baixe antes se quiser guardá-lo.</p><div class="row"><button id="dno" class="btn">Voltar</button><button id="dok" class="btn primary">Descartar</button></div></dialog>
+</div>
+
+<script>"use strict";
+const $=s=>document.querySelector(s), val=n=>document.querySelector(`input[name=${n}]:checked`).value;
+const MAXSIDE=4096;
+/* ---------- Escolha da imagem ---------- */
+const drop=$("#drop"),inp=$("#file");
+drop.onclick=()=>inp.click();
+drop.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();inp.click()}};
+inp.onchange=()=>inp.files[0]&&setFile(inp.files[0]);
+["dragover","dragenter"].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add("over")}));
+["dragleave","drop"].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove("over")}));
+drop.addEventListener("drop",e=>e.dataTransfer.files[0]&&setFile(e.dataTransfer.files[0]));
+addEventListener("paste",e=>{const f=[...(e.clipboardData?.files||[])].find(f=>f.type.startsWith("image/"));f&&setFile(f)});
+function setFile(f){
+  if(!f.type.startsWith("image/")){$("#dropS").textContent="Esse arquivo não é uma imagem. Escolha um JPG, PNG ou WebP.";return}
+  file=f;if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(f);
+  $("#thumb").src=url;$("#thumb").style.display="block";
+  $("#dropT").textContent=f.name;$("#dropS").textContent="Clique para trocar a imagem";
+  start();
+}
+/* ---------- Progresso ---------- */
+function say(t,cls="",show=true){$("#prog").style.display=show?"block":"none";const m=$("#msg");m.textContent=t;m.className=cls}
+function pct(p){p=Math.max(3,Math.min(100,p));$("#bar i").style.width=p+"%";$("#bar").setAttribute("aria-valuenow",Math.round(p))}
+const loadImg=src=>new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error("Não foi possível ler a imagem."));i.src=src});
+const loadScript=src=>new Promise((res,rej)=>{const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=()=>rej(new Error("Falha ao carregar "+src));document.head.appendChild(s)});
+const toBlob=c=>new Promise(r=>c.toBlob(r,"image/png"));
+const timeout=(p,ms)=>Promise.race([p,new Promise((_,r)=>setTimeout(()=>r(new Error("Tempo esgotado")),ms))]);
+const sessions={};let ortP=null;
+function getOrt(){return ortP||(ortP=(async()=>{
+  const b="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/";
+  await loadScript(b+"ort.webgpu.min.js");ort.env.wasm.wasmPaths=b;ort.env.wasm.numThreads=self.crossOriginIsolated?Math.min(4,navigator.hardwareConcurrency||2):1;return ort})())}
+const idb=()=>new Promise((res,rej)=>{const q=indexedDB.open("lumina",1);q.onupgradeneeded=()=>q.result.createObjectStore("m");q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});
+async function dbGet(k){try{const d=await idb();return await new Promise(r=>{const q=d.transaction("m").objectStore("m").get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)})}catch{return null}}
+async function dbSet(k,v){try{const d=await idb();await new Promise(r=>{const t=d.transaction("m","readwrite");t.objectStore("m").put(v,k);t.oncomplete=t.onerror=t.onabort=()=>r()})}catch{}}
+
+const DBG=false;
+let file=null,url=null,ai=null,raf=0,tt,tok={c:false};
+const MODEL_RAPIDO="https://huggingface.co/olmeange/pixelity-models/resolve/main/models/u2netp.onnx";
+const MODEL_DETALHE="https://huggingface.co/onnx-community/BiRefNet_lite-ONNX/resolve/main/onnx/model.onnx";
+const MOBILE=/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)||(navigator.deviceMemory&&navigator.deviceMemory<=4);
+const PV_CAP=MOBILE?1920:2560;
+async function getSession(u,gpu){
+  const key=u+(gpu?":g":":w");if(sessions[key])return sessions[key];
+  const ort=await getOrt();let buf=await dbGet(u);
+  if(buf){buf=buf instanceof Uint8Array?buf:new Uint8Array(buf);say("Carregando o modelo salvo neste navegador…")}
+  else{
+    say("Baixando o modelo de IA (só na primeira vez)…");
+    const r=await fetch(u);if(!r.ok)throw new Error("download "+r.status);
+    const len=+r.headers.get("content-length")||0,rd=r.body.getReader(),ch=[];let got=0;
+    for(;;){const{done,value}=await rd.read();if(done)break;if(tok.c)throw new Error("cancelado");ch.push(value);got+=value.length;if(len){pct(5+got/len*60);say(`Baixando o modelo de IA (só na primeira vez)… ${Math.round(got/1e6)} de ${Math.round(len/1e6)} MB`)}}
+    buf=new Uint8Array(got);let o=0;for(const c of ch){buf.set(c,o);o+=c.length}
+    await dbSet(u,buf);try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch{}
+  }
+  pct(68);say("Inicializando o modelo…");
+  const s=await timeout(ort.InferenceSession.create(buf.slice(),{executionProviders:[gpu?"webgpu":"wasm"],graphOptimizationLevel:"basic"}),gpu?60000:150000);
+  return sessions[key]=s;
+}
+/* Devolve a máscara (0..255) S×S: quanto cada pixel pertence ao objeto */
+async function segment(sess,img,S,norm){
+  const c=document.createElement("canvas");c.width=c.height=S;const x=c.getContext("2d",{willReadFrequently:true});x.imageSmoothingQuality="high";x.drawImage(img,0,0,S,S);
+  const d=x.getImageData(0,0,S,S).data,pl=S*S,t=new Float32Array(3*pl),mean=[.485,.456,.406],sd=[.229,.224,.225];
+  for(let i=0;i<pl;i++)for(let j=0;j<3;j++)t[j*pl+i]=(d[i*4+j]/255-mean[j])/sd[j];
+  pct(75);say("Recortando…");
+  const out=await sess.run({[sess.inputNames[0]]:new ort.Tensor("float32",t,[1,3,S,S])}),o=out[sess.outputNames[0]].data;
+  let mn=1e9,mx=-1e9;for(let i=0;i<pl;i++){const v=o[i];if(v<mn)mn=v;if(v>mx)mx=v}
+  const sig=mn<0||mx>1,m=new Uint8ClampedArray(pl);
+  if(norm){const sp=(mx-mn)||1;for(let i=0;i<pl;i++)m[i]=(o[i]-mn)/sp*255}
+  else for(let i=0;i<pl;i++)m[i]=(sig?1/(1+Math.exp(-o[i])):o[i])*255;
+  const id=new ImageData(S,S);for(let i=0;i<pl;i++){id.data[i*4]=id.data[i*4+1]=id.data[i*4+2]=m[i];id.data[i*4+3]=255}
+  const mc=document.createElement("canvas");mc.width=mc.height=S;mc.getContext("2d").putImageData(id,0,0);return mc;
+}
+/* O sistema escolhe: modelo detalhado em computador com placa de vídeo; senão o rápido */
+async function recortar(img){
+  say("Preparando a IA…");pct(4);
+  if(navigator.gpu&&!MOBILE){
+    try{const s=await getSession(MODEL_DETALHE,true);return{mask:await timeout(segment(s,img,1024,false),120000),method:"IA no navegador"}}
+    catch(e){if(tok.c)throw e;console.warn("Modelo detalhado dispensado",e)}
+  }
+  const s=await getSession(MODEL_RAPIDO,false);return{mask:await segment(s,img,320,true),method:"IA no navegador"};
+}
+/* Camadas (original + máscara) das linhas [ya,yb) de uma imagem alvo tw×th */
+function layers(a,tw,th,ya,yb){
+  const h=yb-ya,cut=src=>{const c=document.createElement("canvas");c.width=tw;c.height=h;const x=c.getContext("2d",{willReadFrequently:true});x.imageSmoothingQuality="high";const k=src.height/th;x.drawImage(src,0,ya*k,src.width,h*k,0,0,tw,h);return x.getImageData(0,0,tw,h).data};
+  return{tw,y0:ya,r:cut(a.img0),m:cut(a.mask)};
+}
+const bgRGB=()=>{const v=val("bg");if(v==="t")return null;if(v==="w")return[255,255,255];const h=$("#bgc").value;return[1,3,5].map(i=>parseInt(h.slice(i,i+2),16))};
+const ctl=()=>({c:$("#cont").value/50,s:$("#soft").value/100});
+function paint(P,o,x0,y0,w,h,bg){
+  const id=new ImageData(w,h),d=id.data,{r,m,tw}=P,t=.5-o.c*.35,wd=.02+o.s*.3,lo=t-wd,sp=2*wd;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+    const i=((y0+y-P.y0)*tw+x0+x)*4,q=(y*w+x)*4;let a=(m[i]/255-lo)/sp;a=a<0?0:a>1?1:a;a=a*a*(3-2*a);
+    if(!bg){d[q]=r[i];d[q+1]=r[i+1];d[q+2]=r[i+2];d[q+3]=a*r[i+3]}
+    else{d[q]=r[i]*a+bg[0]*(1-a);d[q+1]=r[i+1]*a+bg[1]*(1-a);d[q+2]=r[i+2]*a+bg[2]*(1-a);d[q+3]=255}
+  }
+  return id;
+}
+async function exportBlob(){
+  const{tw,th}=ai,o=ctl(),bg=bgRGB(),c=document.createElement("canvas");c.width=tw;c.height=th;const x=c.getContext("2d");
+  for(let y=0;y<th;y+=512){const yb=Math.min(th,y+512);x.putImageData(paint(layers(ai,tw,th,y,yb),o,0,y,tw,yb-y,bg),0,y);await new Promise(r=>setTimeout(r))}
+  return toBlob(c);
+}
+function render(){cancelAnimationFrame(raf);raf=requestAnimationFrame(draw)}
+function draw(){
+  if(!ai)return;
+  const F=Math.max(ai.tw,ai.th),L=Math.min(F,PV_CAP)/F,ptw=Math.round(ai.tw*L),pth=Math.round(ai.th*L);
+  if(ai.Pk!==ptw){ai.P=layers(ai,ptw,pth,0,pth);ai.Pk=ptw}
+  const cv=$("#afterCv");if(cv.width!==ptw||cv.height!==pth){cv.width=ptw;cv.height=pth}
+  cv.getContext("2d").putImageData(paint(ai.P,ctl(),0,0,ptw,pth,bgRGB()),0,0);
+  applyZ();
+}
+async function start(){
+  if(!file)return;tok={c:false};const my=tok;ai=null;view(2);$("#back").hidden=true;$("#cancel").hidden=false;$("#texBox").style.display="none";$("#ph").hidden=false;$("#dl").disabled=true;
+  $("#before").src=url;$("#afterCv").getContext("2d").clearRect(0,0,1e4,1e4);move(50);setZ(1);pct(5);say("Preparando…");
+  try{
+    const img0=await loadImg(url),r=await recortar(img0);if(my.c)return;
+    const k=Math.min(1,MAXSIDE/Math.max(img0.width,img0.height));
+    ai={img0,mask:r.mask,tw:Math.round(img0.width*k),th:Math.round(img0.height*k)};
+    $("#info").textContent=`${img0.width}×${img0.height}px`+(k<1?` · saída limitada a ${ai.tw}×${ai.th}px`:"");$("#badge").textContent=r.method;
+    $("#texBox").style.display="block";$("#ph").hidden=true;$("#after").classList.toggle("chk",val("bg")==="t");
+    $("#dl").disabled=false;setZ(1);move(50);render();say("","",false);
+  }catch(e){if(my.c)return;say("Algo deu errado: "+e.message+" Tente outra imagem.","err");$("#back").hidden=false;$("#cancel").hidden=true}
+}
+const upd=()=>{if(!ai)return;$("#bgc").hidden=val("bg")!=="c";$("#after").classList.toggle("chk",val("bg")==="t");render()};
+["cont","soft","bgc"].forEach(id=>$("#"+id).addEventListener("input",upd));
+document.querySelectorAll("input[name=bg]").forEach(r=>r.onchange=upd);
+function doReset(){tok.c=true;ai=null;file=null;$("#thumb").style.display="none";$("#dropT").textContent="Arraste uma imagem ou clique para escolher";$("#dropS").textContent="JPG, PNG ou WebP. Você também pode colar com Ctrl+V.";$("#prog").style.display="none";inp.value="";view(1)}
+$("#reset").onclick=()=>ai?$("#dlg").showModal():doReset();
+$("#dok").onclick=()=>{$("#dlg").close();doReset()};$("#dno").onclick=()=>$("#dlg").close();
+$("#back").onclick=()=>{$("#prog").style.display="none";view(1)};
+$("#cancel").onclick=()=>{tok.c=true;$("#prog").style.display="none";view(1)};
+$("#dl").onclick=async()=>{
+  if(!ai)return;const b=$("#dl"),t=b.textContent;b.disabled=true;b.textContent="Preparando…";
+  try{const blob=await exportBlob(),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(file?file.name.replace(/\.[^.]+$/,""):"imagem")+"-sem-fundo.png";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+  finally{b.textContent=t;b.disabled=false}
+};
+
+let dv=50;
+function move(v){dv=+v;$("#after").style.clipPath=`inset(0 0 0 ${v}%)`;$("#hit").style.left=v+"%";$("#hit").setAttribute("aria-valuenow",Math.round(v))}
+/* Zoom: o conteúdo se move sob a linha de comparação, que fica parada */
+const cmp=$("#cmp");let z=1,tx=0,ty=0,drag=null;
+function applyZ(){
+  const W=cmp.clientWidth,H=cmp.clientHeight;tx=Math.min(0,Math.max(W*(1-z),tx));ty=Math.min(0,Math.max(H*(1-z),ty));
+  const t=`translate(${tx}px,${ty}px) scale(${z})`,bf=$("#before"),cv=$("#afterCv");bf.style.transform=cv.style.transform=t;
+  bf.style.imageRendering=z*W/(bf.naturalWidth||W)>2?"pixelated":"auto";cv.style.imageRendering=z*W/(cv.width||W)>2?"pixelated":"auto";
+  cmp.style.cursor=z>1?"grab":"ew-resize";document.querySelectorAll(".zb").forEach(b=>b.setAttribute("aria-pressed",String(+b.dataset.z===Math.round(z*100)/100)));
+}
+function setZ(nz,cx,cy){
+  const W=cmp.clientWidth||1,H=cmp.clientHeight||1;cx=cx??W/2;cy=cy??H/2;const r=nz/z;tx=cx-(cx-tx)*r;ty=cy-(cy-ty)*r;z=nz;applyZ();
+}
+function setDiv(e){const r=cmp.getBoundingClientRect();move(Math.max(0,Math.min(100,(e.clientX-r.left)/r.width*100)))}
+document.querySelectorAll(".zb").forEach(b=>b.onclick=()=>setZ(+b.dataset.z));
+let mode=null;
+cmp.addEventListener("dragstart",e=>e.preventDefault());
+cmp.onpointerdown=e=>{e.preventDefault();cmp.setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY,tx,ty};
+  mode=(e.target.closest("#hit")||z===1)?"div":"pan";if(mode==="div")setDiv(e);else cmp.style.cursor="grabbing"};
+cmp.onpointermove=e=>{if(!drag)return;if(mode==="div")setDiv(e);else{tx=drag.tx+e.clientX-drag.x;ty=drag.ty+e.clientY-drag.y;applyZ()}};
+cmp.onpointerup=cmp.onpointercancel=()=>{drag=null;applyZ()};
+$("#hit").onkeydown=e=>{if(e.key==="ArrowLeft")move(Math.max(0,dv-2));else if(e.key==="ArrowRight")move(Math.min(100,dv+2));else return;e.preventDefault()};
+cmp.onwheel=e=>{if(!(e.ctrlKey||e.metaKey))return;e.preventDefault();const r=cmp.getBoundingClientRect();setZ(Math.min(8,Math.max(1,z*(e.deltaY<0?1.25:.8))),e.clientX-r.left,e.clientY-r.top)};
+addEventListener("resize",applyZ);
+function view(n){$("#v1").hidden=n!==1;$("#v2").hidden=n!==2;(n===1?$("#t1h"):$("#t2h")).focus({preventScroll:true})}
+document.querySelectorAll(".ctl").forEach(r=>{
+  const i=r.querySelector("input"),o=r.querySelector("output");r.dataset.def=i.getAttribute("value");
+  r.draw=()=>o.textContent=i.value;i.addEventListener("input",r.draw);r.draw();
+  r.querySelector("button").onclick=()=>{i.value=r.dataset.def;r.draw();i.dispatchEvent(new Event("input"))};
+});
+$("#rall").onclick=()=>document.querySelectorAll(".ctl button").forEach(b=>b.click());
+addEventListener("dragover",e=>e.preventDefault());
+addEventListener("drop",e=>{e.preventDefault();const f=e.dataTransfer.files[0];if(f&&!$("#v1").hidden)setFile(f)});
+const hold=$("#hold"),aft=$("#after"),hide=()=>aft.style.visibility="hidden",showA=()=>aft.style.visibility="";
+hold.onpointerdown=e=>{e.preventDefault();hide()};["pointerup","pointerleave","pointercancel"].forEach(t=>hold.addEventListener(t,showA));
+hold.onkeydown=e=>{if(e.key===" "||e.key==="Enter"){e.preventDefault();hide()}};hold.onkeyup=showA;hold.oncontextmenu=e=>e.preventDefault();</script>
+</body>
+</html>
