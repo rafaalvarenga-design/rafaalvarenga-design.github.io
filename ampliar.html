@@ -28,21 +28,21 @@ fieldset{border:0;padding:0;min-width:0}legend{font-size:13px;color:var(--mut);m
 .seg input:checked+span{background:var(--brand);border-color:transparent}.seg input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
 .foot{background:var(--brand);text-align:center;padding:14px var(--s5);font-weight:500}
 /* editor */
-#v2{height:100dvh;display:grid;grid-template-columns:minmax(0,1fr) 320px;grid-template-rows:64px minmax(0,1fr);gap:var(--s4);padding:var(--s4);--ih:calc(100dvh - 120px);--iw:calc(100vw - 368px);animation:in 200ms var(--ease)}
+#v2{height:100dvh;display:grid;grid-template-columns:minmax(0,1fr) 320px;grid-template-rows:64px minmax(0,1fr);gap:var(--s4);padding:var(--s4);animation:in 200ms var(--ease)}
 #top{grid-column:1/-1;display:flex;align-items:center;gap:var(--s3);padding:0 var(--s4);border-radius:18px}
 #top .logo{width:36px;height:36px;border-radius:10px}#top b{font-size:16px;font-weight:650;margin-right:auto}
-#stage{position:relative;display:grid;place-items:center;min-width:0;min-height:0;overflow:hidden}
-#cmp{position:relative;width:fit-content;border-radius:16px;overflow:hidden;line-height:0;touch-action:none;user-select:none;cursor:ew-resize;box-shadow:var(--shadow);background:#011E3E}
-#before{display:block;width:auto;height:auto;max-width:var(--iw);max-height:var(--ih);transform-origin:0 0;pointer-events:none;-webkit-user-drag:none}
-#after{position:absolute;inset:0;clip-path:inset(0 0 0 50%)}#afterCv{display:block;width:100%;height:100%;pointer-events:none;transform-origin:0 0}
+#stage{position:relative;min-width:0;min-height:0}
+#cmp{position:absolute;inset:0;border-radius:16px;overflow:hidden;line-height:0;touch-action:none;user-select:none;cursor:ew-resize;box-shadow:var(--shadow);background:color-mix(in srgb,var(--ink) 12%,var(--bg))}#cmp:focus-visible{outline-offset:-3px}
+#before,#afterCv{position:absolute;left:0;top:0;display:block;max-width:none;transform-origin:0 0;pointer-events:none;-webkit-user-drag:none}
+#after{position:absolute;inset:0;clip-path:inset(0 0 0 50%)}
 #hit{position:absolute;top:0;bottom:0;left:50%;width:44px;margin-left:-22px;cursor:ew-resize;z-index:2;touch-action:none}
 #hit:focus-visible{outline-offset:-2px}
 #line{position:absolute;top:0;bottom:0;left:50%;width:2px;margin-left:-1px;background:#fff;box-shadow:0 0 0 1px rgba(1,30,62,.4);pointer-events:none}
 #knob{position:absolute;top:50%;left:50%;width:36px;height:36px;margin:-18px;border-radius:50%;background:var(--brand);color:var(--ink);display:grid;place-items:center;box-shadow:0 2px 10px rgba(1,30,62,.4);pointer-events:none}
 .tag{position:absolute;top:10px;padding:2px 10px;border-radius:99px;background:rgba(1,30,62,.7);color:#fff;font-size:12px;line-height:1.6;pointer-events:none;z-index:1}
-#zoom{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:2px;padding:4px;border-radius:14px;z-index:3}
-.zb{appearance:none;font:inherit;font-weight:550;height:32px;min-width:44px;border:0;background:none;border-radius:10px;cursor:pointer;color:var(--ink)}.zb[aria-pressed=true]{background:var(--brand)}
-#prog{position:absolute;inset:0;z-index:5;background:rgba(236,239,246,.85)}
+#fit{position:absolute;left:0;right:0;bottom:14px;margin-inline:auto;width:max-content;z-index:3;appearance:none;font:inherit;font-weight:550;height:36px;padding:0 var(--s4);border-radius:14px;color:var(--ink);cursor:pointer;display:flex;align-items:center;gap:var(--s2);white-space:nowrap;animation:in 160ms var(--ease);transition:opacity 200ms var(--ease),border-color 160ms var(--ease)}#fit:hover{border-color:var(--stroke-hi)}#fit .sep{color:var(--mut)}.busy #fit{opacity:.35}
+#tagL{left:10px}#tagR{right:10px}
+#prog{position:absolute;inset:0;z-index:5;border-radius:16px;background:rgba(236,239,246,.85)}
 .pbox{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(380px,86%);padding:var(--s5);display:grid;gap:var(--s3)}
 #bar{height:8px;border-radius:9px;background:rgba(1,30,62,.1);overflow:hidden}#bar i{display:block;position:relative;overflow:hidden;height:100%;width:0;border-radius:9px;background:var(--brand);transition:width .25s}
 }
@@ -58,7 +58,7 @@ fieldset{border:0;padding:0;min-width:0}legend{font-size:13px;color:var(--mut);m
 .cdlg{border:1px solid var(--edge);padding:var(--s5);width:min(380px,calc(100vw - 32px));margin:auto;color:var(--ink);background:rgba(255,255,255,.93);display:none;flex-direction:column;gap:var(--s2)}
 .cdlg[open]{display:flex;animation:in 160ms var(--ease)}.cdlg::backdrop{background:rgba(1,30,62,.38)}
 .cdlg .row{display:flex;justify-content:flex-end;gap:var(--s2);margin-top:var(--s3)}
-@media(max-width:820px){#v2{grid-template-columns:minmax(0,1fr);grid-template-rows:64px minmax(0,1fr) auto;--ih:calc(100dvh - 64px - 44dvh - 72px);--iw:calc(100vw - 32px)}#panel{max-height:44dvh;padding:var(--s4)}}
+@media(max-width:820px){#v2{grid-template-columns:minmax(0,1fr);grid-template-rows:64px minmax(0,1fr) auto}#panel{max-height:44dvh;padding:var(--s4)}}
 @media(max-width:480px){#top .btn{padding:0 var(--s3)}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -88,10 +88,10 @@ fieldset{border:0;padding:0;min-width:0}legend{font-size:13px;color:var(--mut);m
 <div id="v2" hidden>
 <header id="top" class="glass"><a class="logo" href="index.html" aria-label="Voltar para todas as ferramentas" title="Todas as ferramentas"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></svg></a><b id="t2h" tabindex="-1">Ampliar imagem</b><button id="reset" class="btn">Nova imagem</button><button id="dl" class="btn primary" disabled>Baixar</button></header>
 <section id="stage">
-<div id="cmp"><img id="before" alt="Imagem original" draggable="false"><div id="after"><canvas id="afterCv" role="img" aria-label="Imagem melhorada"></canvas></div>
+<div id="cmp" tabindex="0" role="group" aria-label="Pré-visualização. Use + e − para zoom, setas para mover e 0 para ajustar à tela"><img id="before" alt="Imagem original" draggable="false"><div id="after"><canvas id="afterCv" role="img" aria-label="Imagem melhorada"></canvas></div>
 <div id="hit" tabindex="0" role="slider" aria-label="Comparar antes e depois" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><div id="line"></div><div id="knob" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6-6 6 6 6M15 6l6 6-6 6"/></svg></div></div>
-<span class="tag" style="left:10px">Antes</span><span class="tag" style="right:10px">Depois</span></div>
-<div id="zoom" class="glass" role="group" aria-label="Zoom"><button class="zb" data-z="1">1x</button><button class="zb" data-z="2">2x</button><button class="zb" data-z="4">4x</button><button class="zb" data-z="8">8x</button></div>
+<span class="tag" id="tagL">Antes</span><span class="tag" id="tagR">Depois</span></div>
+<button id="fit" class="glass" type="button" hidden aria-label="Voltar a ajustar à tela"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg><span id="zpct">100%</span><span class="sep" aria-hidden="true">·</span><span>Ajustar</span></button>
 <div id="prog" style="display:none" aria-live="polite"><div class="pbox glass"><div id="bar" role="progressbar" aria-label="Progresso" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div><p id="msg"></p><button id="cancel" class="btn">Cancelar</button><button id="back" class="btn" hidden>Voltar</button></div></div>
 </section>
 <aside id="panel" class="glass">
@@ -104,7 +104,7 @@ fieldset{border:0;padding:0;min-width:0}legend{font-size:13px;color:var(--mut);m
 <div class="ctl" id="lnRow" title="Realça contornos e linhas sem endurecer áreas lisas"><div class="ch"><span class="kl">Nitidez dos traços</span><output></output><button type="button" aria-label="Restaurar Nitidez dos traços" title="Restaurar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg></button></div><input type="range" id="ln" min="0" max="100" value="30" aria-label="Nitidez dos traços"></div>
 <div class="ctl" id="dnRow" title="Suaviza manchas e artefatos em áreas de cor lisa, preservando contornos"><div class="ch"><span class="kl">Limpar ruído</span><output></output><button type="button" aria-label="Restaurar Limpar ruído" title="Restaurar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg></button></div><input type="range" id="dn" min="0" max="100" value="25" aria-label="Limpar ruído"></div>
 <div class="acts"><button id="hold" class="btn" title="Mantenha pressionado para ver a imagem original">Ver original</button><button id="rall" class="btn">Restaurar</button></div>
-<p class="hint">Com zoom, arraste a imagem para mover e use a alça para comparar. Ctrl/⌘ + rolagem também amplia.</p>
+<p class="hint" id="zhint">Role para dar zoom, arraste para mover e clique duas vezes para ver em tamanho real. Use a alça para comparar.</p>
 </div>
 <div style="margin-top:var(--s4)"><span class="badge" id="badge"></span><span class="hint" id="info"></span><p class="hint" id="dbg" style="margin-top:8px"></p></div>
 </aside>
@@ -343,7 +343,7 @@ $("#go").onclick=async()=>{
   if(!file)return;
   const type=val("type"),scale=+val("scale"),mode=val("mode");tok={c:false};const my=tok;
   Object.keys(TM).forEach(k=>delete TM[k]);$("#go").disabled=true;ai=null;view(2);$("#back").hidden=true;$("#cancel").hidden=false;$("#texBox").style.display="none";$("#ph").hidden=false;$("#ph").textContent="Os ajustes aparecem quando a imagem ficar pronta.";
-  $("#before").src=url;$("#afterCv").getContext("2d").clearRect(0,0,1e4,1e4);$("#dl").disabled=true;move(50);setZ(1);pct(5);say("Preparando…");
+  $("#before").src=url;$("#afterCv").getContext("2d").clearRect(0,0,1e4,1e4);$("#dl").disabled=true;move(50);fitView();pct(5);say("Preparando…");
   try{
     let r;
     if(mode==="max"){
@@ -363,42 +363,123 @@ async function show(r,type){
   }
   $("#info").textContent=`${img0.width}×${img0.height} → ${ai.tw}×${ai.th}px`+(ai.note?` · ${ai.note}`:"");$("#badge").textContent=r.method;
   const ctrl=!ai.plain;$("#texBox").style.display=ctrl?"block":"none";$("#ph").hidden=ctrl;$("#ph").textContent="Este resultado não tem ajustes.";
-  $("#mixRow").style.display=ai.outs.length>1?"":"none";setCtl();setZ(1);move(50);$("#dl").disabled=false;render();
+  $("#mixRow").style.display=ai.outs.length>1?"":"none";setCtl();fitView();move(50);$("#dl").disabled=false;render();
 }
 let dv=50;
-function move(v){dv=+v;$("#after").style.clipPath=`inset(0 0 0 ${v}%)`;$("#hit").style.left=v+"%";$("#hit").setAttribute("aria-valuenow",Math.round(v))}
-const upd=()=>{if(ai&&!ai.plain)render()};
-["mix","keep","tex","ln","dn"].forEach(id=>$("#"+id).oninput=upd);
-function setCtl(){
-  if(!ai)return;const T=ai.type,v=(id,x)=>{$("#"+id).value=x;$("#"+id).parentElement.dataset.def=x};
-  $("#texRow").style.display=T==="anime"?"none":"";$("#lnRow").style.display=T==="person"?"none":"";$("#dnRow").style.display=T==="anime"?"":"none";
-  $("#texRow .kl").textContent=T==="art"?"Textura da pintura":"Textura da pele";
-  $("#texRow").title=T==="art"?"Realça pinceladas e a textura da tela ou do papel":"Devolve poros e grão natural da pele";
-  v("tex",T==="art"?40:50);v("ln",30);v("dn",25);v("keep",40);v("mix",50);
-  document.querySelectorAll(".ctl").forEach(k=>k.draw());
+const cmp=$("#cmp"),bf=$("#before"),cv=$("#afterCv"),chk=$("#chkbg"),hit=$("#hit"),fitB=$("#fit"),tagL=$("#tagL"),tagR=$("#tagR"),stg=$("#stage");
+/* Janela de visualização: ocupa todo o palco, qualquer que seja o formato da imagem.
+   "Ajustar" = imagem inteira à vista, sem passar do tamanho final. O zoom (z) é relativo ao Ajustar.
+   O conteúdo se move sob a linha de comparação, que fica parada. */
+let z=1,tx=0,ty=0,bw=0,bh=0,fw=1,mode=null,down=null,pinch=null,tapT=0,tapX=0,tapY=0,gt,bt;
+const ptrs=new Map(),finalW=()=>ai?ai.tw:bf.naturalWidth,zMax=()=>Math.max(4,4*fw/bw);
+function layout(){
+  const W=cmp.clientWidth,H=cmp.clientHeight,nw=bf.naturalWidth,nh=bf.naturalHeight;
+  if(!W||!H||!nw||!nh)return false;
+  fw=finalW()||nw;const s=Math.min(W/nw,H/nh,fw/nw);bw=nw*s;bh=nh*s;
+  for(const el of[bf,cv]){el.style.width=bw+"px";el.style.height=bh+"px"}
+  return true;
 }
-/* Zoom: o conteúdo se move sob a linha de comparação, que fica parada */
-const cmp=$("#cmp");let z=1,tx=0,ty=0,drag=null;
+function move(v){
+  const W=cmp.clientWidth||1;
+  if(bw){const lo=Math.max(0,tx),hi=Math.min(W,tx+bw*z);v=Math.min(hi,Math.max(lo,v/100*W))/W*100}
+  dv=+v;$("#after").style.clipPath=`inset(0 0 0 ${v}%)`;hit.style.left=v+"%";hit.setAttribute("aria-valuenow",Math.round(v));
+}
 function applyZ(){
-  const W=cmp.clientWidth,H=cmp.clientHeight;tx=Math.min(0,Math.max(W*(1-z),tx));ty=Math.min(0,Math.max(H*(1-z),ty));
-  const t=`translate(${tx}px,${ty}px) scale(${z})`,bf=$("#before"),cv=$("#afterCv");bf.style.transform=cv.style.transform=t;
-  bf.style.imageRendering=z*W/(bf.naturalWidth||W)>2?"pixelated":"auto";cv.style.imageRendering=z*W/(cv.width||W)>2?"pixelated":"auto";
-  cmp.style.cursor=z>1?"grab":"ew-resize";document.querySelectorAll(".zb").forEach(b=>b.setAttribute("aria-pressed",String(+b.dataset.z===Math.round(z*100)/100)));
+  if(!bw)return;
+  const W=cmp.clientWidth,H=cmp.clientHeight,w=bw*z,h=bh*z;
+  tx=w<=W?(W-w)/2:Math.min(0,Math.max(W-w,tx));ty=h<=H?(H-h)/2:Math.min(0,Math.max(H-h,ty));
+  bf.style.transform=cv.style.transform=`translate(${tx}px,${ty}px) scale(${z})`;
+  bf.style.imageRendering=w/(bf.naturalWidth||w)>2?"pixelated":"auto";cv.style.imageRendering=w/(cv.width||w)>2?"pixelated":"auto";
+  if(chk){chk.style.left=tx+"px";chk.style.top=ty+"px";chk.style.width=w+"px";chk.style.height=h+"px"}
+  /* alça e etiquetas acompanham a parte visível da imagem, não a janela */
+  const x0=Math.max(0,tx),x1=Math.min(W,tx+w),y0=Math.max(0,ty),y1=Math.min(H,ty+h);
+  hit.style.top=y0+"px";hit.style.bottom=(H-y1)+"px";
+  tagL.style.left=(x0+10)+"px";tagR.style.right=(W-x1+10)+"px";tagL.style.top=tagR.style.top=(y0+10)+"px";
+  const zoomed=z>1.001;cmp.style.cursor=zoomed?(down&&mode==="pan"?"grabbing":"grab"):"ew-resize";
+  fitB.hidden=!zoomed;
+  if(zoomed){const p=Math.round(w/fw*100);$("#zpct").textContent=p+"%";fitB.setAttribute("aria-label",`Voltar a ajustar à tela. Zoom em ${p}%`)}
+  move(dv);
 }
-function setZ(nz,cx,cy){
-  const W=cmp.clientWidth||1,H=cmp.clientHeight||1;cx=cx??W/2;cy=cy??H/2;const r=nz/z;tx=cx-(cx-tx)*r;ty=cy-(cy-ty)*r;z=nz;applyZ();
+function glide(){
+  const t="220ms var(--ease)";for(const el of[bf,cv])el.style.transition="transform "+t;
+  if(chk)chk.style.transition=`left ${t},top ${t},width ${t},height ${t}`;
+  clearTimeout(gt);gt=setTimeout(()=>{for(const el of[bf,cv,chk])if(el)el.style.transition=""},260);
 }
-function setDiv(e){const r=cmp.getBoundingClientRect();move(Math.max(0,Math.min(100,(e.clientX-r.left)/r.width*100)))}
-document.querySelectorAll(".zb").forEach(b=>b.onclick=()=>setZ(+b.dataset.z));
-let mode=null;
+function fitView(smooth){z=1;if(smooth)glide();layout();applyZ()}
+function setZ(nz,cx,cy,smooth){
+  const W=cmp.clientWidth||1,H=cmp.clientHeight||1;cx=cx??W/2;cy=cy??H/2;
+  nz=Math.min(zMax(),Math.max(1,nz));if(nz<1.02)nz=1;
+  const r=nz/z;tx=cx-(cx-tx)*r;ty=cy-(cy-ty)*r;z=nz;if(smooth)glide();applyZ();
+}
+const busy=(on,hold)=>{stg.classList.toggle("busy",on);clearTimeout(bt);if(on&&hold)bt=setTimeout(()=>stg.classList.remove("busy"),hold)};
+const rect=()=>cmp.getBoundingClientRect();
+function setDiv(e){const r=rect();move((e.clientX-r.left)/r.width*100)}
+/* Toque ou clique duplo: de perto (tamanho real) e de volta para Ajustar */
+const dbl=(x,y)=>z>1?fitView(true):setZ(Math.max(2,fw/bw),x,y,true);
+function startPinch(){
+  const[a,b]=[...ptrs.values()],r=rect();
+  pinch={d:Math.hypot(a.x-b.x,a.y-b.y)||1,z,tx,ty,mx:(a.x+b.x)/2-r.left,my:(a.y+b.y)/2-r.top};down=null;mode="pinch";
+}
 cmp.addEventListener("dragstart",e=>e.preventDefault());
-cmp.onpointerdown=e=>{e.preventDefault();cmp.setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY,tx,ty};
-  mode=(e.target.closest("#hit")||z===1)?"div":"pan";if(mode==="div")setDiv(e);else cmp.style.cursor="grabbing"};
-cmp.onpointermove=e=>{if(!drag)return;if(mode==="div")setDiv(e);else{tx=drag.tx+e.clientX-drag.x;ty=drag.ty+e.clientY-drag.y;applyZ()}};
-cmp.onpointerup=cmp.onpointercancel=()=>{drag=null;applyZ()};
-$("#hit").onkeydown=e=>{if(e.key==="ArrowLeft")move(Math.max(0,dv-2));else if(e.key==="ArrowRight")move(Math.min(100,dv+2));else return;e.preventDefault()};
-cmp.onwheel=e=>{if(!(e.ctrlKey||e.metaKey))return;e.preventDefault();const r=cmp.getBoundingClientRect();setZ(Math.min(8,Math.max(1,z*(e.deltaY<0?1.25:.8))),e.clientX-r.left,e.clientY-r.top)};
-addEventListener("resize",applyZ);
+cmp.onpointerdown=e=>{
+  if(e.pointerType==="mouse"&&e.button!==0||ptrs.size>=2)return;
+  e.preventDefault();cmp.setPointerCapture(e.pointerId);cmp.focus({preventScroll:true});
+  ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});busy(true);
+  if(ptrs.size===2){startPinch();return}
+  const onHit=!!e.target.closest("#hit");
+  down={x:e.clientX,y:e.clientY,t:performance.now(),hit:onHit,tx,ty,moved:false};
+  mode=(onHit||z<=1.001)?"div":"pan";if(onHit)setDiv(e);else applyZ();
+};
+cmp.onpointermove=e=>{
+  const p=ptrs.get(e.pointerId);if(!p)return;p.x=e.clientX;p.y=e.clientY;
+  if(mode==="pinch"&&ptrs.size===2){
+    const[a,b]=[...ptrs.values()],r=rect(),mx=(a.x+b.x)/2-r.left,my=(a.y+b.y)/2-r.top;
+    const nz=Math.min(zMax(),Math.max(1,pinch.z*Math.hypot(a.x-b.x,a.y-b.y)/pinch.d)),k=nz/pinch.z;
+    tx=mx-(pinch.mx-pinch.tx)*k;ty=my-(pinch.my-pinch.ty)*k;z=nz;applyZ();return;
+  }
+  if(!down)return;
+  if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>8)down.moved=true;
+  if(mode==="div"){if(down.hit||down.moved)setDiv(e)}else if(mode==="pan"){tx=down.tx+e.clientX-down.x;ty=down.ty+e.clientY-down.y;applyZ()}
+};
+cmp.onpointerup=cmp.onpointercancel=e=>{
+  if(!ptrs.delete(e.pointerId))return;
+  if(mode==="pinch"){
+    if(ptrs.size<2){
+      if(z<1.02)z=1;const rest=[...ptrs.values()][0];pinch=null;down=null;mode=null;
+      if(rest&&z>1){down={x:rest.x,y:rest.y,t:0,hit:false,tx,ty,moved:true};mode="pan"}
+      applyZ();if(!rest)busy(false);
+    }
+    return;
+  }
+  const d=down;down=null;mode=null;
+  if(d&&e.type==="pointerup"&&!d.moved&&!d.hit&&performance.now()-d.t<300){
+    const n=performance.now(),r=rect();
+    if(n-tapT<320&&Math.hypot(e.clientX-tapX,e.clientY-tapY)<30){tapT=0;dbl(e.clientX-r.left,e.clientY-r.top)}else{tapT=n;tapX=e.clientX;tapY=e.clientY}
+  }
+  applyZ();busy(false);
+};
+/* Rolagem do mouse e pinça do trackpad (que o navegador envia como Ctrl + rolagem) dão zoom no ponto do cursor */
+cmp.onwheel=e=>{
+  e.preventDefault();if(!e.deltaY)return;
+  const px=Math.max(-100,Math.min(100,e.deltaMode===0?e.deltaY:e.deltaY*33)),r=rect();
+  setZ(z*Math.exp(-px*(e.ctrlKey?.01:.0022)),e.clientX-r.left,e.clientY-r.top);busy(true,400);
+};
+hit.onkeydown=e=>{if(e.key==="ArrowLeft")move(Math.max(0,dv-2));else if(e.key==="ArrowRight")move(Math.min(100,dv+2));else return;e.preventDefault()};
+cmp.onkeydown=e=>{
+  if(e.defaultPrevented||e.ctrlKey||e.metaKey||e.altKey)return;
+  const k=e.key,st=Math.max(40,Math.min(cmp.clientWidth,cmp.clientHeight)*.15);
+  if(k==="+"||k==="=")setZ(z*1.25,undefined,undefined,true);
+  else if(k==="-"||k==="_")setZ(z/1.25,undefined,undefined,true);
+  else if(k==="0")fitView(true);
+  else if(z>1&&k==="ArrowLeft")tx+=st;else if(z>1&&k==="ArrowRight")tx-=st;
+  else if(z>1&&k==="ArrowUp")ty+=st;else if(z>1&&k==="ArrowDown")ty-=st;
+  else return;
+  e.preventDefault();applyZ();
+};
+fitB.onclick=()=>fitView(true);
+bf.addEventListener("load",()=>{if(layout())applyZ()});
+new ResizeObserver(()=>{if(layout())applyZ()}).observe(cmp);
+if(matchMedia("(pointer:coarse)").matches)$("#zhint").textContent="Pince para dar zoom, arraste para mover e toque duas vezes para ver em tamanho real. Use a alça para comparar.";
 function doReset(){tok.c=true;ai=null;file=null;$("#thumb").style.display="none";$("#dropT").textContent="Arraste uma imagem ou clique para escolher";$("#dropS").textContent="JPG, PNG ou WebP. Você também pode colar com Ctrl+V.";
   $("#go").disabled=true;$("#prog").style.display="none";inp.value="";view(1)}
 $("#reset").onclick=()=>ai?$("#dlg").showModal():doReset();
