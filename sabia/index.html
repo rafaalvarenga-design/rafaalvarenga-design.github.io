@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Lumina – Ferramentas de imagem com IA</title>
+<link rel="stylesheet" href="ui.css">
+<style>
+.hub{flex:1;width:min(1000px,100%);margin:0 auto;padding:var(--s6) var(--s4);padding-top:calc(var(--s6) + env(safe-area-inset-top,0px));display:flex;flex-direction:column;align-items:center;text-align:center;gap:var(--s3);animation:in 200ms var(--ease)}
+.tools{width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:var(--s4);margin-top:var(--s5);text-align:left}
+.tool{min-height:176px;padding:var(--s5);display:flex;flex-direction:column;align-items:flex-start;gap:var(--s2);color:var(--ink);text-decoration:none;transition:transform 160ms var(--ease),border-color 160ms var(--ease)}
+a.tool{background:var(--glass-hi)}a.tool:hover{transform:scale(1.01);border-color:var(--stroke-hi)}
+.ti{width:48px;height:48px;border-radius:14px;background:var(--brand);display:grid;place-items:center;margin-bottom:var(--s2);flex:none}
+.tool b{font-size:18px;font-weight:600}.tool .d{color:var(--mut)}
+.tool.soon{background:none;border:1px dashed var(--stroke-hi);border-radius:var(--r-lg);box-shadow:none}
+.soon .ti{background:none;border:1px dashed var(--stroke-hi);color:var(--mut)}
+.soon b{font-size:16px;opacity:.7}.soon small{color:var(--mut);font-size:13px}
+@media(max-width:480px){.tools{grid-template-columns:1fr}.tool.soon{min-height:0;flex-direction:row;align-items:center;padding:var(--s3) var(--s4);gap:var(--s3)}.soon .ti{margin:0;width:40px;height:40px}.soon small{margin-left:auto}}
+</style>
+</head>
+<body>
+<main class="hub">
+<div class="logo lg" aria-hidden="true"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></svg></div>
+<h1>Lumina</h1>
+<p class="home-sub">Melhore, restaure e transforme suas imagens com IA, direto no navegador.</p>
+<section class="tools" aria-label="Ferramentas">
+<a class="tool glass" href="ampliar.html"><span class="ti" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span><b>Ampliar imagem</b><span class="d">Aumente a resolução e refine os detalhes, com ajustes em tempo real.</span></a>
+<a class="tool glass" href="remover-fundo.html"><span class="ti" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/></svg></span><b>Remover fundo</b><span class="d">Recorte pessoas e objetos e salve em PNG transparente.</span></a><div class="tool soon" aria-label="Restaurar rostos, em breve"><span class="ti" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg></span><b>Restaurar rostos</b><small>Em breve</small></div><div class="tool soon" aria-label="Remover ruído, em breve"><span class="ti" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h2l2-6 3 12 3-9 2 3h6"/></svg></span><b>Remover ruído</b><small>Em breve</small></div><div class="tool soon" aria-label="Colorir fotos, em breve"><span class="ti" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.4-.3-.4-.5-.8-.5-1.3 0-1.1.9-2 2-2h2.4A3.6 3.6 0 0 0 21 10.7C21 6.4 17 3 12 3Z"/><path d="M7.5 11h.01M10 7.5h.01M14.5 7.5h.01"/></svg></span><b>Colorir fotos</b><small>Em breve</small></div><div class="tool soon" aria-label="Apagar objetos, em breve"><span class="ti" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 21-4-4a2 2 0 0 1 0-2.8L14.2 3a2 2 0 0 1 2.8 0l4 4a2 2 0 0 1 0 2.8L10 21H7ZM14 7l6 6"/></svg></span><b>Apagar objetos</b><small>Em breve</small></div>
+</section>
+</main>
+<footer class="foot">Grátis, sem cadastro e feito para rodar no seu navegador.</footer>
+</body>
+</html>

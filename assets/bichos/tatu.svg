@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 0 256 240" role="img" aria-label="Tatu provisório">
+  <ellipse cx="124" cy="214" rx="82" ry="9" fill="#011E3E" opacity=".12"/>
+  <path d="M46 160c-22 2-32 18-40 36 24-2 44-10 58-24z" fill="#A3D841"/>
+  <rect x="78" y="176" width="28" height="34" rx="14" fill="#A3D841"/>
+  <rect x="142" y="176" width="28" height="34" rx="14" fill="#A3D841"/>
+  <path d="M36 176C30 114 74 66 128 66s92 48 86 110z" fill="#1FBCCF"/>
+  <g fill="none" stroke="#1069C5" stroke-width="6" stroke-linecap="round" opacity=".75">
+    <path d="M68 88C58 114 58 146 62 172"/>
+    <path d="M98 72C90 108 90 144 92 172"/>
+    <path d="M130 66c-2 44-2 80 0 106"/>
+    <path d="M162 72c4 38 4 74 2 100"/>
+    <path d="M190 90c6 26 8 54 6 82"/>
+  </g>
+  <path d="M30 168h192c0 12-8 20-20 20H50c-12 0-20-8-20-20z" fill="#A3D841"/>
+  <path d="M192 122c20-10 46 4 54 22-4 16-26 28-54 28z" fill="#A3D841"/>
+  <path d="M200 120l4-26 22 22z" fill="#A3D841"/>
+  <path d="M206 116l2-12 10 10z" fill="#1FBCCF"/>
+  <circle cx="216" cy="138" r="6.5" fill="#011E3E"/>
+  <circle cx="218" cy="135.5" r="2.2" fill="#fff"/>
+  <circle cx="243" cy="145" r="5" fill="#011E3E"/>
+  <path d="M208 159q10 7 20 0" fill="none" stroke="#011E3E" stroke-width="3.5" stroke-linecap="round"/>
+</svg>
