@@ -75,7 +75,7 @@ select{width:100%;height:var(--h);border-radius:var(--r);border:1px solid var(--
 <p class="home-sub">Recorte pessoas e objetos e salve em PNG transparente.</p>
 <div id="drop" class="glass drop" tabindex="0" role="button" aria-label="Escolher imagem"><img id="thumb" alt="Prévia da imagem escolhida"><b id="dropT">Arraste uma imagem ou clique para escolher</b><span id="dropS" class="hint">JPG, PNG ou WebP. Você também pode colar com Ctrl+V.</span></div>
 <input type="file" id="file" accept="image/*" hidden>
-<div id="betaBox1" hidden class="glass" style="width:100%;padding:var(--s4);text-align:left"><h3>Teste de modelos</h3><select id="mdl1" aria-label="Modelo de IA (antes de enviar)"></select></div>
+<div id="betaBox1" class="glass" style="width:100%;padding:var(--s4);text-align:left"><h3>Teste de modelos</h3><select id="mdl1" aria-label="Modelo de IA (antes de enviar)"></select></div>
 <p class="hint">A imagem não sai do seu computador. Na primeira vez, a IA é baixada e fica salva neste navegador.</p>
 </div></div><footer class="foot">Grátis e sem cadastro. Tudo é processado no seu navegador.</footer></div>
 
@@ -89,7 +89,7 @@ select{width:100%;height:var(--h);border-radius:var(--r);border:1px solid var(--
 <div id="prog" style="display:none" aria-live="polite"><div class="pbox glass"><div id="bar" role="progressbar" aria-label="Progresso" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div><p id="msg"></p><button id="cancel" class="btn">Cancelar</button><button id="back" class="btn" hidden>Voltar</button></div></div>
 </section>
 <aside id="panel" class="glass">
-<div id="betaBox" hidden style="margin-bottom:var(--s5)"><h3>Teste de modelos</h3><select id="mdl" aria-label="Modelo de IA"><option value="auto">Automático</option><option value="rapido">Rápido · U²-Net P (5 MB)</option><option value="silueta">Silhueta · U²-Net reduzido (44 MB)</option><option value="modnet">Retrato · MODNet (26 MB)</option><option value="isnet">Geral · ISNet (179 MB)</option><option value="anime">Ilustração · ISNet anime (176 MB)</option><option value="birefnet">Detalhado · BiRefNet Lite (224 MB)</option></select><p class="hint" style="margin-top:var(--s2)">Escolha um modelo para refazer o recorte e me conte qual funcionou melhor.</p></div>
+<div id="betaBox" style="margin-bottom:var(--s5)"><h3>Teste de modelos</h3><select id="mdl" aria-label="Modelo de IA"><option value="auto">Automático</option><option value="silueta">Silhueta · U²-Net reduzido (44 MB)</option><option value="modnet">Retrato · MODNet (26 MB)</option><option value="isnet">Geral · ISNet (179 MB)</option><option value="anime">Ilustração · ISNet anime (176 MB)</option><option value="birefnet">Detalhado · BiRefNet Lite (224 MB)</option></select><p class="hint" style="margin-top:var(--s2)">Escolha um modelo para refazer o recorte e me conte qual funcionou melhor.</p></div>
 <p class="hint" id="ph">Os ajustes aparecem quando o recorte ficar pronto.</p>
 <div id="texBox" style="display:none">
 <h3>Fundo</h3>
@@ -137,17 +137,15 @@ const toBlob=c=>new Promise(r=>c.toBlob(r,"image/png"));
 const timeout=(p,ms)=>Promise.race([p,new Promise((_,r)=>setTimeout(()=>r(new Error("Tempo esgotado")),ms))]);
 const DBG=false;
 let file=null,url=null,ai=null,raf=0,tt,tok={c:false};
-const BETA=location.hash==="#beta";
 const MOBILE=/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)||(navigator.deviceMemory&&navigator.deviceMemory<=4);
 const PV_CAP=MOBILE?1920:2560;
 const HFR="https://huggingface.co/",IN=[.485,.456,.406],IS=[.229,.224,.225];
 const MODELS={
- rapido:{n:"Rápido · U²-Net P (5 MB)",u:HFR+"olmeange/pixelity-models/resolve/main/models/u2netp.onnx",S:320,mean:IN,std:IS,post:"minmax"},
  silueta:{n:"Silhueta · U²-Net reduzido (44 MB)",u:HFR+"fofr/comfyui/resolve/main/rembg/silueta.onnx",S:320,mean:IN,std:IS,post:"minmax"},
  modnet:{n:"Retrato · MODNet (26 MB)",u:HFR+"Xenova/modnet/resolve/main/onnx/model.onnx",S:512,mean:[.5,.5,.5],std:[.5,.5,.5],post:"alpha"},
  isnet:{n:"Geral · ISNet (179 MB)",u:HFR+"fofr/comfyui/resolve/main/rembg/isnet-general-use.onnx",S:1024,mean:IN,std:[1,1,1],post:"minmax"},
  anime:{n:"Ilustração · ISNet anime (176 MB)",u:HFR+"fofr/comfyui/resolve/main/rembg/isnet-anime.onnx",S:1024,mean:IN,std:[1,1,1],post:"minmax"},
- birefnet:{n:"Detalhado · BiRefNet Lite (224 MB)",u:HFR+"onnx-community/BiRefNet_lite-ONNX/resolve/main/onnx/model.onnx",S:1024,mean:IN,std:IS,post:"auto"}
+ birefnet:{n:"Detalhado · BiRefNet Lite (224 MB)",u:HFR+"onnx-community/BiRefNet_lite-ONNX/resolve/main/onnx/model.onnx",S:1024,mean:IN,std:IS,post:"auto",gpuOnly:true}
 };
 /* A IA roda num worker: a página nunca congela, e Cancelar encerra o processamento de verdade */
 const WORKER_SRC=[
@@ -160,9 +158,10 @@ const WORKER_SRC=[
 'onmessage=async function(e){var m=e.data;try{',
 ' if(m.t==="load"){var buf=await dbGet(m.u);',
 '  if(buf){buf=buf instanceof Uint8Array?buf:new Uint8Array(buf);postMessage({t:"cache"})}',
-'  else{var r=await fetch(m.u);if(!r.ok)throw new Error("download "+r.status);var len=+r.headers.get("content-length")||0,rd=r.body.getReader(),ch=[],got=0;',
-'   for(;;){var x=await rd.read();if(x.done)break;ch.push(x.value);got+=x.value.length;postMessage({t:"dl",got:got,len:len})}',
-'   buf=new Uint8Array(got);var o=0;for(var i=0;i<ch.length;i++){buf.set(ch[i],o);o+=ch[i].length}await dbSet(m.u,buf)}',
+'  else{var r=await fetch(m.u);if(!r.ok)throw new Error("download "+r.status);var len=+r.headers.get("content-length")||0,rd=r.body.getReader(),ch=[],got=0,pre=len?new Uint8Array(len):null;',
+'   for(;;){var x=await rd.read();if(x.done)break;if(pre&&got+x.value.length<=len)pre.set(x.value,got);else{if(pre){ch.push(pre.subarray(0,got));pre=null}ch.push(x.value)}got+=x.value.length;postMessage({t:"dl",got:got,len:len})}',
+'   if(len&&got!==len)throw new Error("download incompleto");',
+'   if(pre)buf=pre;else{buf=new Uint8Array(got);var o=0;for(var i=0;i<ch.length;i++){buf.set(ch[i],o);o+=ch[i].length}}await dbSet(m.u,buf)}',
 '  postMessage({t:"init"});',
 '  sess=await ort.InferenceSession.create(buf,{executionProviders:[m.gpu?"webgpu":"wasm"],graphOptimizationLevel:"basic"});postMessage({t:"loaded"})}',
 ' else if(m.t==="run"){var out=await sess.run({[sess.inputNames[0]]:new ort.Tensor("float32",m.data,[1,3,m.S,m.S])});',
@@ -175,12 +174,14 @@ function ask(msg,done,onMsg,tr){return new Promise((res,rej)=>{pend={rej};wk.onm
 async function loadModel(m,gpu){
   const key=m.u+(gpu?":g":":w");if(wk&&wkKey===key)return;
   killWorker();wk=new Worker(URL.createObjectURL(new Blob([WORKER_SRC],{type:"text/javascript"})));
-  let t=0;
-  try{await ask({t:"load",u:m.u,gpu},"loaded",p=>{
-    if(p.t==="dl"){pct(5+(p.len?p.got/p.len*60:0));say("Baixando o modelo de IA (só na primeira vez)…"+(p.len?` ${Math.round(p.got/1e6)} de ${Math.round(p.len/1e6)} MB`:""))}
-    else if(p.t==="cache")say("Carregando o modelo salvo neste navegador…");
-    else if(p.t==="init"){pct(68);say("Inicializando o modelo… (pode levar um pouco)");t=setTimeout(()=>{if(pend){const q=pend;pend=null;q.rej(new Error("Tempo esgotado ao iniciar o modelo"))}},gpu?90000:150000)}
-  })}finally{clearTimeout(t)}
+  let t=0;const arm=(ms,msg)=>{clearTimeout(t);t=setTimeout(()=>{if(pend){const q=pend;pend=null;q.rej(new Error(msg))}},ms)};
+  try{
+    arm(60000,"O modelo não começou a carregar. Verifique a conexão e tente de novo.");
+    await ask({t:"load",u:m.u,gpu},"loaded",p=>{
+      if(p.t==="dl"){arm(30000,"O download do modelo parou. Verifique a conexão e tente de novo.");pct(5+(p.len?p.got/p.len*60:0));say("Baixando o modelo de IA (só na primeira vez)…"+(p.len?` ${Math.round(p.got/1e6)} de ${Math.round(p.len/1e6)} MB`:""))}
+      else if(p.t==="cache"){arm(60000,"Tempo esgotado ao carregar o modelo salvo.");say("Carregando o modelo salvo neste navegador…")}
+      else if(p.t==="init"){pct(68);say("Inicializando o modelo… (pode levar um pouco)");arm(gpu?90000:150000,"Tempo esgotado ao iniciar o modelo.")}
+    })}finally{clearTimeout(t)}
   wkKey=key;
 }
 /* Devolve a máscara S×S: quanto cada pixel pertence ao objeto */
@@ -188,22 +189,25 @@ async function segment(m,img){
   const S=m.S,c=document.createElement("canvas");c.width=c.height=S;const x=c.getContext("2d",{willReadFrequently:true});x.imageSmoothingQuality="high";x.drawImage(img,0,0,S,S);
   const d=x.getImageData(0,0,S,S).data,pl=S*S,t=new Float32Array(3*pl);
   for(let i=0;i<pl;i++)for(let j=0;j<3;j++)t[j*pl+i]=(d[i*4+j]/255-m.mean[j])/m.std[j];
-  pct(75);say("Recortando…");
+  pct(75);say("Recortando…"+(m.S>=1024?" Na primeira vez pode levar mais de um minuto.":""));
   const o=(await ask({t:"run",data:t,S},"done",null,[t.buffer])).o;
   let mn=1e9,mx=-1e9;for(let i=0;i<pl;i++){const v=o[i];if(v<mn)mn=v;if(v>mx)mx=v}
   const id=new ImageData(S,S),sig=m.post==="auto"&&(mn<0||mx>1),sp=(mx-mn)||1;
   for(let i=0;i<pl;i++){const v=m.post==="minmax"?(o[i]-mn)/sp:sig?1/(1+Math.exp(-o[i])):o[i];id.data[i*4]=id.data[i*4+1]=id.data[i*4+2]=Math.max(0,Math.min(1,v))*255;id.data[i*4+3]=255}
   const mc=document.createElement("canvas");mc.width=mc.height=S;mc.getContext("2d").putImageData(id,0,0);return mc;
 }
-/* Automático: BiRefNet em computador com placa de vídeo; senão o modelo rápido. No modo teste, o modelo escolhido. */
+/* Automático: BiRefNet em computador com placa de vídeo; senão a Silhueta. No modo teste, o modelo escolhido. */
 async function recortar(img,sel){
   say("Preparando a IA…");pct(4);
   const t0=performance.now(),g=!!navigator.gpu;let tries;
-  if(sel&&sel!=="auto"){const m=MODELS[sel];tries=m.S>=1024&&g?[[sel,true],[sel,false]]:[[sel,false]]}
-  else tries=g&&!MOBILE?[["birefnet",true],["rapido",false]]:[["rapido",false]];
+  if(sel&&sel!=="auto"){
+    const m=MODELS[sel];
+    if(m.gpuOnly&&!g)throw new Error("Este modelo precisa de WebGPU, que não está disponível neste navegador. Escolha outro modelo.");
+    tries=m.gpuOnly?[[sel,true]]:m.S>=1024&&g?[[sel,true],[sel,false]]:[[sel,false]];
+  }else tries=g&&!MOBILE?[["birefnet",true],["silueta",false]]:[["silueta",false]];
   let last;
   for(const[k,gpu]of tries){const m=MODELS[k];
-    try{await loadModel(m,gpu);const mask=await timeout(segment(m,img),180000);return{mask,name:m.n,ep:gpu?"GPU":"CPU",ms:performance.now()-t0}}
+    try{await loadModel(m,gpu);const mask=await timeout(segment(m,img),gpu?120000:180000);return{mask,name:m.n,ep:gpu?"GPU":"CPU",ms:performance.now()-t0}}
     catch(e){if(tok.c)throw e;console.warn(k,gpu,e);last=e;killWorker()}}
   throw last||new Error("modelo indisponível");
 }
@@ -244,13 +248,15 @@ async function start(){
     const img0=await loadImg(url),r=await recortar(img0,$("#mdl").value);if(my.c)return;
     const k=Math.min(1,MAXSIDE/Math.max(img0.width,img0.height));
     ai={img0,mask:r.mask,tw:Math.round(img0.width*k),th:Math.round(img0.height*k)};
-    $("#info").textContent=`${img0.width}×${img0.height}px`+(k<1?` · saída limitada a ${ai.tw}×${ai.th}px`:"");$("#badge").textContent=BETA?`${r.name} · ${r.ep} · ${(r.ms/1000).toFixed(1)} s`:"IA no navegador";
+    $("#info").textContent=`${img0.width}×${img0.height}px`+(k<1?` · saída limitada a ${ai.tw}×${ai.th}px`:"");$("#badge").textContent=`${r.name} · ${r.ep} · ${(r.ms/1000).toFixed(1)} s`;
     $("#texBox").style.display="block";$("#ph").hidden=true;$("#after").classList.toggle("chk",val("bg")==="t");
     $("#dl").disabled=false;fitView();move(50);render();say("","",false);
   }catch(e){if(my.c)return;say("Algo deu errado: "+e.message+" Tente outra imagem.","err");$("#back").hidden=false;$("#cancel").hidden=true}
 }
-if(BETA){$("#betaBox").hidden=false;$("#betaBox1").hidden=false;$("#mdl1").innerHTML=$("#mdl").innerHTML;
-  $("#mdl1").onchange=()=>{$("#mdl").value=$("#mdl1").value};$("#mdl").onchange=()=>{$("#mdl1").value=$("#mdl").value;if(file)start()}}
+/* Seletor de modelos sempre visível enquanto os modelos estão em teste. BiRefNet só é oferecido com WebGPU. */
+if(!navigator.gpu){const o=$("#mdl").querySelector("option[value=birefnet]");o.disabled=true;o.textContent+=" · precisa de WebGPU"}
+$("#mdl1").innerHTML=$("#mdl").innerHTML;
+$("#mdl1").onchange=()=>{$("#mdl").value=$("#mdl1").value};$("#mdl").onchange=()=>{$("#mdl1").value=$("#mdl").value;if(file)start()};
 const upd=()=>{if(!ai)return;$("#bgc").hidden=val("bg")!=="c";$("#after").classList.toggle("chk",val("bg")==="t");render()};
 ["cont","soft","bgc"].forEach(id=>$("#"+id).addEventListener("input",upd));
 document.querySelectorAll("input[name=bg]").forEach(r=>r.onchange=upd);
@@ -266,7 +272,7 @@ $("#dl").onclick=async()=>{
 };
 
 let dv=50;
-const cmp=$("#cmp"),bf=$("#before"),cv=$("#afterCv"),chk=$("#chkbg"),hit=$("#hit"),fitB=$("#fit"),tagL=$("#tagL"),tagR=$("#tagR"),stg=$("#stage");
+const cmp=$("#cmp"),bf=$("#before"),cv=$("#afterCv"),chk=$("#chkbg"),hit=$("#hit"),fitB=$("#fit"),stg=$("#stage");
 /* Janela de visualização: ocupa todo o palco, qualquer que seja o formato da imagem.
    "Ajustar" = imagem inteira à vista, sem passar do tamanho final. O zoom (z) é relativo ao Ajustar.
    O conteúdo se move sob a linha de comparação, que fica parada. */
@@ -291,10 +297,9 @@ function applyZ(){
   bf.style.transform=cv.style.transform=`translate(${tx}px,${ty}px) scale(${z})`;
   bf.style.imageRendering=w/(bf.naturalWidth||w)>2?"pixelated":"auto";cv.style.imageRendering=w/(cv.width||w)>2?"pixelated":"auto";
   if(chk){chk.style.left=tx+"px";chk.style.top=ty+"px";chk.style.width=w+"px";chk.style.height=h+"px"}
-  /* alça e etiquetas acompanham a parte visível da imagem, não a janela */
+  /* a alça acompanha a parte visível da imagem; "Antes" e "Depois" ficam fixos nos cantos da janela */
   const x0=Math.max(0,tx),x1=Math.min(W,tx+w),y0=Math.max(0,ty),y1=Math.min(H,ty+h);
   hit.style.top=y0+"px";hit.style.bottom=(H-y1)+"px";
-  tagL.style.left=(x0+10)+"px";tagR.style.right=(W-x1+10)+"px";tagL.style.top=tagR.style.top=(y0+10)+"px";
   const zoomed=z>1.001;cmp.style.cursor=zoomed?(down&&mode==="pan"?"grabbing":"grab"):"ew-resize";
   fitB.hidden=!zoomed;
   if(zoomed){const p=Math.round(w/fw*100);$("#zpct").textContent=p+"%";fitB.setAttribute("aria-label",`Voltar a ajustar à tela. Zoom em ${p}%`)}
