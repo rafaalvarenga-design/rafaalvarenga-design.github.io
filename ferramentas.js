@@ -25,7 +25,6 @@ window.FERRAMENTAS = [
     descricao: "Crie elementos de interface prontos para usar nos seus designs.",
     cores: ["#f58a1f", "#ffb20f"],
     imagem: "assets/cards/mimico.webp"
-    nomeImagem: "assets/nomes/mimico.svg"
   },
   {
     nome: "SabI.A.",
@@ -35,6 +34,5 @@ window.FERRAMENTAS = [
     descricao: "IAs que rodam no navegador, sem instalar nada.",
     cores: ["#6c51e8", "#a98bff"],
     imagem: "assets/cards/sabia.webp"
-    nomeImagem: "assets/nomes/sabia.svg"
   }
 ];
