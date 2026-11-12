@@ -18,7 +18,7 @@ window.FERRAMENTAS = [
     nomeImagem: "assets/nomes/mutatu.svg"
   },
   {
-    nome: "MiMico",
+    nome: "Mi.Mico",
     bicho: "mico",
     pasta: "mimico/",
     estado: "teste",
@@ -28,7 +28,7 @@ window.FERRAMENTAS = [
     nomeImagem: "assets/nomes/mimico.svg"
   },
   {
-    nome: "SabI.A.",
+    nome: "Sab.IA",
     bicho: "sabiá",
     pasta: "sabia/",
     estado: "teste",
