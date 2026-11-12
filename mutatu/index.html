@@ -376,8 +376,13 @@ audio{border-radius:999px}
 @media (hover:hover){.smore:hover{background:color-mix(in srgb,var(--azul) 75%,transparent)}.smitem:hover{background:var(--gelo)}}
 .prevrow{display:flex;align-items:center;gap:var(--s4);flex-wrap:wrap}
 .prevrow .btn{flex:none}
-.prevrow .hint{margin:0;flex:1 1 220px}
+.prevrow .hint{margin:0;flex:1 1 220px;text-align:left}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.smenu{background:var(--branco)}}
+
+/* editor de áudio: player compacto no lugar da imagem do vídeo */
+.stage.is-audio .wrap{width:100%;height:84px}
+.stage.is-audio video{display:none}
+.stage.is-audio .playbtn svg{width:48px;height:48px}
 </style>
 </head>
 <body>
@@ -506,9 +511,9 @@ const EXT_MIME = {mp4:'video/mp4',m4v:'video/mp4',mov:'video/quicktime',webm:'vi
 /* alguns sistemas não informam o tipo do arquivo: nesse caso, o tipo vem da extensão */
 const fixType = fs => [...fs].map(f => { const m = EXT_MIME[(f.name.split('.').pop()||'').toLowerCase()]; return (f.type || !m) ? f : new File([f], f.name, {type:m, lastModified:f.lastModified}); });
 const CFG = {
-  image:{ title:'Solte o(s) arquivo(s) aqui ou clique para escolher', hint:'JPG, PNG, WebP e outros formatos de imagem', accept:'image/*', btn:'Converter imagens' },
-  audio:{ title:'Solte o(s) arquivo(s) aqui ou clique para escolher', hint:'MP3, WAV, OGG e outros formatos de áudio', accept:'audio/*,video/*', btn:'Converter áudios' },
-  video:{ title:'Solte o vídeo aqui ou clique para escolher', hint:'MP4, MOV, WebM e outros formatos de vídeo', accept:'video/*', btn:'Converter vídeos' }
+  image:{ title:'Solte o(s) arquivo(s) aqui ou clique para escolher', hint:'JPG, PNG, WebP e outros formatos de imagem', accept:'image/*,.heic,.avif', btn:'Converter imagens' },
+  audio:{ title:'Solte o áudio aqui ou clique para escolher', hint:'MP3, WAV, OGG e outros formatos de áudio', accept:'audio/*,.mp3,.wav,.ogg,.m4a,.flac,.opus', btn:'Converter áudio' },
+  video:{ title:'Solte o vídeo aqui ou clique para escolher', hint:'MP4, MOV, WebM e outros formatos de vídeo', accept:'video/*,.mov,.mkv,.m4v', btn:'Converter vídeos' }
 };
 const opts = {
   image:{fmt:'keep', q:100, w:0},
@@ -540,11 +545,6 @@ const CONTROLS = {
       <select data-k="fmt">${sel('fmt',0,[['mp3','MP3'],['opus','Opus (WebM, bem leve)'],['wav','WAV (sem compressão)']].filter(([v])=>okFmt(v)))}</select></label>
     <label>Taxa de bits
       <select data-k="br">${sel('br',0,[[64,'64 kbps (menor)'],[128,'128 kbps'],[192,'192 kbps'],[256,'256 kbps'],[320,'320 kbps (melhor)']])}</select></label>
-    ${edAudio() ? '<p class="hint">Escolha o trecho e o volume na linha do tempo ao lado.</p>' : `    <div class="two">
-      <label>Início do trecho<input type="text" inputmode="decimal" data-k="start" value="${opts.audio.start}" placeholder="0:00"></label>
-      <label>Fim do trecho<input type="text" inputmode="decimal" data-k="end" value="${opts.audio.end}" placeholder="até o final"></label>
-    </div>
-    <p class="hint">Deixe início e fim vazios para usar tudo, ou informe um trecho como 1:30 ou 90 (segundos).</p>`}
     <p class="hint">Opus é gravado em tempo real; MP3 e WAV são rápidos.</p>`,
   video:()=>{ const mp3 = opts.video.fmt==='mp3'; return `
     <label>Formato de saída
@@ -567,10 +567,10 @@ const baseOf = n => n.replace(/\.[^.]+$/,'');
 
 function renderControls(){
   $('#drop b').textContent = CFG[tab].title;
-  $('#file').multiple = true;
+  $('#file').multiple = tab==='image';
   $('#controls').innerHTML = CONTROLS[tab]();
   $('#dropHint').textContent = CFG[tab].hint;
-  $('#file').accept = ALL_ACCEPT;
+  $('#file').accept = CFG[tab].accept;
 }
 function renderQueue(){
   const list = items[tab], q = $('#queue'), hasEd = list.length>0 && !!list[0].editor;
@@ -686,14 +686,14 @@ function openEditor(f){
 }
 function addFiles(files){
   files = [...files];
-  const otherEd = (tab==='video' ? items.audio : items.video)[0];
-  if(tab==='video' || (tab==='audio' && files.some(f=>f.type.startsWith('video/')))){
+  if(tab==='video' || tab==='audio'){
+    const one = tab==='video' ? 'vídeo' : 'áudio', otherEd = (tab==='video' ? items.audio : items.video)[0];
     if(items[tab].length){ setStatus('Remova o item atual para carregar outro.'); return; }
-    if(otherEd && otherEd.editor){ setStatus('Já há um vídeo aberto na aba '+(tab==='video'?'Áudio':'Vídeo')+'. Remova-o antes.'); return; }
-    const vs = files.filter(f => f.type.startsWith('video/'));
-    if(!vs.length){ setStatus('Isso não é um arquivo de vídeo.'); return; }
-    openEditor(vs[0]);
-    setStatus(files.length>1 ? 'Só um vídeo por vez: usei o primeiro e ignorei os outros.' : '');
+    if(otherEd && otherEd.editor){ setStatus('Já há um arquivo aberto na aba '+(tab==='video'?'Áudio':'Vídeo')+'. Remova-o antes.'); return; }
+    const ok = files.filter(f => f.type.startsWith(tab+'/'));
+    if(!ok.length){ setStatus('Isso não é um arquivo de '+one+'.'); return; }
+    openEditor(ok[0]);
+    setStatus(files.length>1 ? 'Só um '+one+' por vez: usei o primeiro e ignorei os outros.' : '');
     return;
   }
   for(const f of files){
@@ -1027,8 +1027,8 @@ const ED = {
     const isV = it.tab==='video', root=$('#editor'); root.hidden=false;
     root.innerHTML=`
       <div class="ed-top"><div><div class="name" title="${esc(it.file.name)}">${esc(it.file.name)}</div><div class="meta">${fmtSize(it.file.size)}</div></div>
-        <div class="acts"><button class="btn" id="edSwap">${IC.swap}<span>Trocar vídeo</span></button><button class="btn" id="edRm">${IC.trash}<span>Remover</span></button></div></div>
-      <div class="stage" id="edStage" tabindex="0" aria-label="Pré-visualização. Espaço toca ou pausa, setas andam quadro a quadro.">
+        <div class="acts"><button class="btn" id="edSwap">${IC.swap}<span>Trocar ${isV?'vídeo':'áudio'}</span></button><button class="btn" id="edRm">${IC.trash}<span>Remover</span></button></div></div>
+      <div class="stage${isV?'':' is-audio'}" id="edStage" tabindex="0" aria-label="${isV?'Pré-visualização. Espaço toca ou pausa, setas andam quadro a quadro.':'Player de áudio. Espaço toca ou pausa.'}">
         <div class="wrap" id="edWrap"><canvas id="edBg" class="bgcv" hidden></canvas><video id="edV" playsinline preload="auto"></video>
           <div class="crop" id="edCrop" hidden><i data-c="nw"></i><i data-c="ne"></i><i data-c="sw"></i><i data-c="se"></i></div>
           <button class="playbtn" id="edPlay" aria-label="Tocar trecho" title="Tocar trecho (espaço)">${IC.playL}</button></div>
@@ -1104,11 +1104,11 @@ const ED = {
     const v=this.v=$('#edV'); v.src=it.url;
     try{
       await new Promise((res,rej)=>{ v.onloadedmetadata=res; v.onerror=()=>rej(); });
-      if(!isFinite(v.duration) || !v.videoWidth) throw 0;
+      if(!isFinite(v.duration) || (isV && !v.videoWidth)) throw 0;
     }catch(e){
       if(this.it!==it) return;
       items[it.tab]=[]; this.close(); renderQueue();
-      setStatus('Este navegador não consegue ler este vídeo (comum em HEVC/H.265). Tente no Chrome ou Edge no computador, ou converta antes para H.264.');
+      setStatus(isV ? 'Este navegador não consegue ler este vídeo (comum em HEVC/H.265). Tente no Chrome ou Edge no computador, ou converta antes para H.264.' : 'Este navegador não consegue ler este áudio. Tente outro arquivo ou converta antes para MP3 ou WAV.');
       return;
     }
     if(this.it!==it) return;
@@ -1257,7 +1257,7 @@ const ED = {
     root.querySelectorAll('[data-sp]').forEach(b=>b.setAttribute('aria-pressed',Number(b.dataset.sp)===a.spd));
     this.syncTools();
     this.v.playbackRate=advOf(it).spd; this.layout();
-    const wave=it.adv && (it.tab==='audio' || opts.video.fmt==='mp3');
+    const wave = it.tab==='audio' || (it.adv && opts.video.fmt==='mp3');
     $('#edStrip').classList.toggle('wave',wave); if(wave) this.wave();
   },
   async wave(){
@@ -1498,18 +1498,24 @@ function enterApp(t){
 function routeFiles(files){
   files = fixType(files);
   const inHome = !$('#home').hidden, ks = files.map(kindOf).filter(Boolean);
-  if(!ks.length){ const m = 'Formato não reconhecido. Use um arquivo de vídeo, áudio ou imagem.'; if(inHome) $('#homeMsg').textContent = m; else setStatus(m); return; }
-  const cur = inHome ? homeTab : tab;
-  /* fica na aba atual se ela serve; vídeo na aba Áudio continua valendo (tirar o som do vídeo); senão vai para a aba do tipo do arquivo */
-  const t = ks.includes(cur) ? cur : (cur==='audio' && ks.includes('video')) ? 'audio' : ks[0];
-  const use = (t==='audio' && !ks.includes('audio')) ? files.filter(f => kindOf(f)==='video') : files.filter(f => kindOf(f)===t);
-  if(!inHome && t!==tab && busy){ setStatus('Espere a conversão terminar para trocar de aba.'); return; }
-  if(inHome || t!==tab) enterApp(t);
+  if(!inHome){   /* páginas internas: só o formato da própria página */
+    const mine = files.filter(f => kindOf(f)===tab), nome = {video:'vídeo', audio:'áudio', image:'imagem'};
+    if(!mine.length){
+      setStatus(ks.length ? 'Esta aba aceita só '+nome[tab]+'. Para esse arquivo, use a aba '+KIND[ks[0]]+'.' : 'Formato não reconhecido. Esta aba aceita só '+nome[tab]+'.');
+      return;
+    }
+    addFiles(mine);
+    if(mine.length<files.length){ const cur = $('#status').textContent; setStatus((cur ? cur+' ' : '')+'Arquivos de outros tipos foram ignorados.'); }
+    return;
+  }
+  if(!ks.length){ $('#homeMsg').textContent = 'Formato não reconhecido. Use um arquivo de vídeo, áudio ou imagem.'; return; }
+  const t = ks.includes(homeTab) ? homeTab : ks[0], use = files.filter(f => kindOf(f)===t);
+  enterApp(t);
   addFiles(use);
   const notes = [];
-  if(t!==cur) notes.push('Abri a aba '+KIND[t]+' pelo tipo do arquivo.');
+  if(t!==homeTab) notes.push('Abri a aba '+KIND[t]+' pelo tipo do arquivo.');
   if(use.length<files.length) notes.push('Arquivos de outros tipos foram ignorados.');
-  if(notes.length) setStatus(notes.join(' '));
+  if(notes.length){ const cur = $('#status').textContent; setStatus((cur ? cur+' ' : '')+notes.join(' ')); }
 }
 function homeFiles(files){ routeFiles(files); }
 function askLeave(){
