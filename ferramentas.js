@@ -1,20 +1,21 @@
 /* Lista de ferramentas do hub. Para adicionar, trocar ou reordenar, edite só este arquivo.
-   pasta   : pasta da ferramenta (o hub abre pasta/index.html)
-   entrada : (opcional) outro arquivo de entrada dentro da pasta, se não for index.html
-   estado  : "no_ar" | "teste" | "breve"  ("breve" deixa o botão desativado)
-   cores   : [cor A, cor B] do gradiente da ferramenta
-   imagem  : ilustração do bicho (troque o arquivo em assets/bichos/ pelo definitivo)
-   bichoProvisorio : true mostra o selo "bicho provisório"; apague quando o mascote final chegar */
+   nome       : nome da ferramenta (usado em acessibilidade e quando não há logotipo)
+   pasta      : pasta da ferramenta (o hub abre pasta/index.html)
+   entrada    : (opcional) outro arquivo de entrada dentro da pasta, se não for index.html
+   estado     : "no_ar" | "teste" | "breve"  ("breve" deixa o botão desativado)
+   cores      : [cor A, cor B] do gradiente do botão, do brilho do card e do fundo da página
+   imagem     : imagem quadrada do card (mascote), ideal 720 a 1080 px, em WebP ou JPG
+   nomeImagem : (opcional) logotipo em SVG; sem ele o nome aparece em texto */
 window.FERRAMENTAS = [
   {
-    nome: "Mutatu",
+    nome: "Mu.Tatu",
     bicho: "tatu",
     pasta: "mutatu/",
     estado: "teste",
-    descricao: "Converta e comprima vídeo, áudio e imagem sem enviar nada para a internet.",
-    cores: ["#A3D841", "#1FBCCF"],
-    imagem: "assets/bichos/tatu.svg",
-    bichoProvisorio: true
+    descricao: "Converta e comprima arquivos sem enviar para a internet.",
+    cores: ["#8bbc34", "#aad000"],
+    imagem: "assets/cards/mutatu.webp",
+    nomeImagem: "assets/nomes/mutatu.svg"
   },
   {
     nome: "MiMico",
@@ -22,9 +23,8 @@ window.FERRAMENTAS = [
     pasta: "mimico/",
     estado: "teste",
     descricao: "Crie elementos de interface prontos para usar nos seus designs.",
-    cores: ["#FFCD38", "#FF7F1F"],
-    imagem: "assets/bichos/mico.svg",
-    bichoProvisorio: true
+    cores: ["#f58a1f", "#ffb20f"],
+    imagem: "assets/cards/mimico.webp"
   },
   {
     nome: "SabI.A.",
@@ -32,8 +32,7 @@ window.FERRAMENTAS = [
     pasta: "sabia/",
     estado: "teste",
     descricao: "IAs que rodam no navegador, sem instalar nada.",
-    cores: ["#FF8FB8", "#B79CFF"],
-    imagem: "assets/bichos/sabia.svg",
-    bichoProvisorio: true
+    cores: ["#6c51e8", "#a98bff"],
+    imagem: "assets/cards/sabia.webp"
   }
 ];

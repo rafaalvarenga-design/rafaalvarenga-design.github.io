@@ -7,7 +7,6 @@
   const dotsEl = document.querySelector(".dots");
   const live = document.getElementById("live");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)");
-  const ESTADO = { no_ar: "no ar", teste: "em teste", breve: "em breve" };
 
   if (!N) {
     track.style.width = "auto";
@@ -34,20 +33,26 @@
     card.style.setProperty("--cb", t.cores[1]);
     card.setAttribute("aria-label", `${t.nome}, ${i + 1} de ${N}`);
 
-    const top = el("div", "top");
-    top.append(el("span", "chip", ESTADO[t.estado] || ""));
-    if (!ESTADO[t.estado]) top.hidden = true;
-
-    const pic = el("div", "pic");
+    const shot = el("div", "shot");
     const img = el("img");
     img.src = t.imagem;
-    img.alt = `Ilustração: ${t.bicho}`;
+    img.alt = "";
     img.draggable = false;
-    pic.append(img);
-    if (t.bichoProvisorio) pic.append(el("span", "chip", "bicho provisório"));
+    img.decoding = "async";
+    shot.append(img);
 
-    const txt = el("div", "txt");
-    txt.append(el("h2", null, t.nome), el("p", null, t.descricao));
+    const panel = el("div", "panel");
+    const h2 = el("h2");
+    if (t.nomeImagem) {
+      const nm = el("img", "nome");
+      nm.src = t.nomeImagem;
+      nm.alt = t.nome;
+      nm.draggable = false;
+      h2.append(nm);
+    } else {
+      h2.textContent = t.nome;
+    }
+    panel.append(h2, el("p", null, t.descricao));
     let btn;
     if (t.estado === "breve") {
       btn = el("span", "btn", "Em breve");
@@ -57,9 +62,9 @@
       btn.href = t.pasta + (t.entrada || "index.html");
       btn.setAttribute("aria-label", `Abrir ${t.nome}`);
     }
-    txt.append(btn);
+    panel.append(btn);
 
-    card.append(el("div", "tint"), top, pic, txt);
+    card.append(shot, panel);
     card.addEventListener("click", (e) => {
       if (justDragged) { e.preventDefault(); return; }
       if (i !== cur) { e.preventDefault(); goTo(i); }
@@ -87,15 +92,15 @@
     cards.forEach(({ card }, i) => {
       const d = mod(i - pos + N / 2, N) - N / 2;
       const ad = Math.abs(d), sg = d < 0 ? -1 : 1;
-      const x = sg * (Math.min(ad, 1) * 0.64 + Math.max(ad - 1, 0) * 0.36) * sp;
-      const y = 0.055 * Math.min(ad, 2.5) ** 2 * sp;
-      const r = clamp(d * 6.5, -16, 16) * sp;
-      const s = 1 - 0.1 * Math.min(ad, 2);
+      const x = sg * (Math.min(ad, 1) * 0.8 + Math.max(ad - 1, 0) * 0.36) * sp;
+      const zz = -0.42 * Math.min(ad, 2) * sp;
+      const ry = -clamp(d * 42, -52, 52) * sp;
+      const s = 1;
       const edge = N >= 3 ? (N / 2 - ad) / 0.5 : 1;
       const o = clamp(Math.min(edge, (2.7 - ad) / 0.7), 0, 1);
       card.style.setProperty("--x", x.toFixed(4));
-      card.style.setProperty("--y", y.toFixed(4));
-      card.style.setProperty("--r", r.toFixed(3));
+      card.style.setProperty("--zz", zz.toFixed(4));
+      card.style.setProperty("--ry", ry.toFixed(3));
       card.style.setProperty("--s", s.toFixed(4));
       card.style.setProperty("--o", o.toFixed(3));
       card.style.setProperty("--v", (Math.min(ad, 1) * 0.26).toFixed(3));
@@ -195,13 +200,13 @@
     const dt = now - drag.lt;
     if (dt > 0) drag.vx = (e.clientX - drag.lx) / dt;
     drag.lx = e.clientX; drag.lt = now;
-    const stepPx = track.offsetWidth * 0.64;
+    const stepPx = track.offsetWidth * 0.8;
     pos = target = drag.from - dx / stepPx;
   });
   function endDrag(e) {
     if (!drag || e.pointerId !== drag.id) return;
     if (drag.moved) {
-      const stepPx = track.offsetWidth * 0.64;
+      const stepPx = track.offsetWidth * 0.8;
       const proj = clamp(-drag.vx * 180 / stepPx, -1.5, 1.5);
       target = Math.round(pos + proj);
       justDragged = true;

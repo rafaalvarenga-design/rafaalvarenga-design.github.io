@@ -7,7 +7,7 @@ Página inicial que reúne as ferramentas. Site estático, sem build: abra `inde
 ```
 index.html  hub.css  hub.js     a página (não precisa mexer)
 ferramentas.js                  a lista de ferramentas (é aqui que você edita)
-assets/                         fonte Host Grotesk e os bichos (assets/bichos/*.svg)
+assets/                         fonte Host Grotesk, logo (logo.svg), cards/ (imagens dos mascotes) e nomes/ (logotipos)
 mutatu/  mimico/  sabia/        uma pasta por ferramenta
 ```
 
@@ -19,11 +19,11 @@ Substitua o conteúdo da pasta dela. O hub abre `pasta/index.html`, então o arq
 
 1. Crie a pasta e coloque o `index.html` dela.
 2. Copie um bloco em `ferramentas.js` e ajuste nome, bicho, pasta, descrição e cores.
-3. Coloque a ilustração do bicho em `assets/bichos/`.
+3. Coloque a imagem quadrada do card em `assets/cards/` (720 a 1080 px, WebP ou JPG) e, se houver, o logotipo em `assets/nomes/`.
 
-## Trocar um mascote provisório
+## Trocar a imagem ou o logotipo de um card
 
-Substitua o arquivo em `assets/bichos/` (mantenha o nome ou ajuste `imagem` em `ferramentas.js`) e apague a linha `bichoProvisorio: true` dessa ferramenta. O selo some.
+Substitua o arquivo em `assets/cards/` (mantenha o nome ou ajuste `imagem` em `ferramentas.js`). O logotipo é o `nomeImagem` da ferramenta; se não houver, o nome aparece em texto.
 
 ## Estados
 
