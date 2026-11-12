@@ -22,17 +22,19 @@ window.FERRAMENTAS = [
     bicho: "mico",
     pasta: "mimico/",
     estado: "teste",
-    descricao: "Crie elementos de interface prontos para usar nos seus designs.",
+    descricao: "Simule elementos e interfaces para usar nos seus designs.",
     cores: ["#f58a1f", "#ffb20f"],
     imagem: "assets/cards/mimico.webp"
+    nomeImagem: "assets/nomes/mimico.svg"
   },
   {
     nome: "SabI.A.",
     bicho: "sabiá",
     pasta: "sabia/",
     estado: "teste",
-    descricao: "IAs que rodam no navegador, sem instalar nada.",
+    descricao: "Ferramentas de I.A. que rodam no seu navegador.",
     cores: ["#6c51e8", "#a98bff"],
     imagem: "assets/cards/sabia.webp"
+    nomeImagem: "assets/nomes/sabia.svg"
   }
 ];
