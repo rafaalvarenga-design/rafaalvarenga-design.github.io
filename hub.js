@@ -31,6 +31,12 @@
     const card = el("article", "card");
     card.style.setProperty("--ca", t.cores[0]);
     card.style.setProperty("--cb", t.cores[1]);
+    if (t.corTexto) card.style.setProperty("--desc", t.corTexto);
+    if (t.nomeLargura) card.style.setProperty("--nome-w", t.nomeLargura);
+    if (t.fundo) {
+      card.style.backgroundImage = `url("${t.fundo}")`;
+      card.style.backgroundSize = "100% 100%";
+    }
     card.setAttribute("aria-label", `${t.nome}, ${i + 1} de ${N}`);
 
     const shot = el("div", "shot");

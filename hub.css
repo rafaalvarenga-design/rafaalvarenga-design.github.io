@@ -66,8 +66,8 @@ h1{margin:0;font-size:clamp(1.8rem,min(1.1rem + 3.6vw,6.4dvh),3.75rem);line-heig
   padding:clamp(16px,calc(var(--w)*.06),26px) var(--s4) clamp(16px,calc(var(--w)*.05),22px);text-align:center;
   background:rgba(255,255,255,.95);border-radius:0 0 calc(var(--w)*.05) calc(var(--w)*.05);
   box-shadow:0 10px 20px rgba(149,162,194,.3)}
-h2{margin:0;display:flex;justify-content:center;font-size:22px;line-height:1.2;font-weight:700;letter-spacing:-.01em}
-.nome{display:block;width:calc(var(--w)*.5);height:auto;pointer-events:none;-webkit-user-drag:none}
+h2{margin:0;min-height:calc(var(--w)*.165);display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1.2;font-weight:700;letter-spacing:-.01em}
+.nome{display:block;width:calc(var(--w)*var(--nome-w,.5));height:auto;pointer-events:none;-webkit-user-drag:none}
 .panel p{margin:0;max-width:30ch;color:var(--desc,#8c99b9);font-size:clamp(13px,calc(var(--w)*.044),15px);line-height:1.4;text-wrap:balance}
 .btn{margin-top:var(--s2);display:inline-flex;align-items:center;justify-content:center;width:74%;min-width:132px;
   height:clamp(40px,calc(var(--w)*.1),46px);padding:0 var(--s4);border-radius:999px;border:0;

@@ -19,7 +19,7 @@ Substitua o conteúdo da pasta dela. O hub abre `pasta/index.html`, então o arq
 
 1. Crie a pasta e coloque o `index.html` dela.
 2. Copie um bloco em `ferramentas.js` e ajuste nome, bicho, pasta, descrição e cores.
-3. Coloque a imagem quadrada do card em `assets/cards/` (720 a 1080 px, WebP ou JPG) e, se houver, o logotipo em `assets/nomes/`.
+3. Coloque a imagem quadrada do card em `assets/cards/` (720 a 1080 px, WebP ou JPG), o fundo da moldura (opcional, também em `assets/cards/`) e o logotipo em SVG em `assets/nomes/`. A largura do logotipo e a cor do texto são definidas em `ferramentas.js` (`nomeLargura` e `corTexto`).
 
 ## Trocar a imagem ou o logotipo de um card
 
