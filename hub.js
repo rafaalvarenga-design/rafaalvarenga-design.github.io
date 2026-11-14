@@ -89,29 +89,6 @@
     return b;
   });
 
-  const indexEl = document.querySelector(".index");
-  const idxBtns = indexEl ? tools.map((t, i) => {
-    const b = el("button", "idx");
-    b.type = "button";
-    b.append(el("span", "num", String(i + 1).padStart(2, "0")));
-    if (t.nomeImagem) {
-      const im = el("img");
-      im.src = t.nomeImagem;
-      im.alt = t.nome;
-      im.draggable = false;
-      b.append(im);
-    } else {
-      b.append(el("span", "nm", t.nome));
-    }
-    b.addEventListener("click", () => goTo(i));
-    return b;
-  }) : [];
-  if (indexEl) {
-    const ol = el("ol");
-    idxBtns.forEach((b) => { const li = el("li"); li.append(b); ol.append(li); });
-    indexEl.append(ol);
-  }
-
   /* ---------- estado e desenho ---------- */
   let pos = 0, target = 0, spread = reduce.matches ? 1 : 0;
   let cur = -1, raf = 0, last = 0, dragging = false, justDragged = false;
@@ -151,7 +128,6 @@
       if (btn.tagName === "A") btn.tabIndex = k === i ? 0 : -1;
     });
     dots.forEach((b, k) => b.setAttribute("aria-current", k === i ? "true" : "false"));
-    idxBtns.forEach((b, k) => b.setAttribute("aria-current", k === i ? "true" : "false"));
     if (!first) live.textContent = `${t.nome}, ${i + 1} de ${N}`;
   }
 
