@@ -232,7 +232,7 @@ label.chk input:checked::after{transform:scale(1)}
 .strip.wave canvas{display:block}.strip.wave img{display:none}
 .shade{position:absolute;top:0;bottom:0;background:color-mix(in srgb,var(--azul) 62%,transparent);pointer-events:none}
 .tl{--cw:0px}
-.sel{position:absolute;top:-3px;bottom:-3px;border-top:3px solid transparent;border-bottom:3px solid transparent;border-image:var(--grad) 1;pointer-events:none}
+.sel{position:absolute;top:-3px;bottom:-3px;border-top:3px solid transparent;border-bottom:3px solid transparent;border-image:var(--grad) 1;clip-path:inset(0 8px);pointer-events:none}
 .h{position:absolute;top:-3px;bottom:-3px;width:16px;border:0;border-radius:8px;background:var(--grad) 0 0/var(--cw) 100% no-repeat;box-shadow:var(--pino);cursor:ew-resize;touch-action:none;padding:0;transition:scale 140ms var(--ease)}
 .h:active{scale:calc(1 + .15 * var(--mv)) calc(1 + .06 * var(--mv))}
 .h[data-h=e]{background-position:100% 0}
@@ -1212,6 +1212,7 @@ const ED = {
     const W=Wd*k, H=Hd*k, bw=v.videoWidth*k, bh=v.videoHeight*k, A=advOf(it), S=coverScale(A.tilt,g.pw,g.ph);
     const wr=$('#edWrap'); wr.style.width=W+'px'; wr.style.height=H+'px'; wr.style.background=(e.ext&&e.blur===false)?'#000':'';
     v.style.cssText=`width:${bw}px;height:${bh}px;left:${(W-bw)/2}px;top:${(H-bh)/2}px;transform:rotate(${A.tilt}deg) scale(${S}) scaleX(${e.flip?-1:1}) rotate(${e.rot}deg);filter:${cssFilter(A)}`;
+    { const bg=$('#edBg'); if(bg) bg.style.filter = 'blur(14px)' + (cssFilter(A)==='none' ? '' : ' '+cssFilter(A)); }
     this.drawBg();
   },
   drawBg(){
