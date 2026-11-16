@@ -47,7 +47,8 @@
     img.decoding = "async";
     shot.append(img);
 
-    const panel = el("div", "panel");
+    const head = el("div", "head");
+    const row = el("div", "row");
     const h2 = el("h2");
     if (t.nomeImagem) {
       const nm = el("img", "nome");
@@ -58,7 +59,6 @@
     } else {
       h2.textContent = t.nome;
     }
-    panel.append(h2, el("p", null, t.descricao));
     let btn;
     if (t.estado === "breve") {
       btn = el("span", "btn", "Em breve");
@@ -68,9 +68,10 @@
       btn.href = t.pasta + (t.entrada || "index.html");
       btn.setAttribute("aria-label", `Abrir ${t.nome}`);
     }
-    panel.append(btn);
+    row.append(h2, btn);
+    head.append(row, el("p", null, t.descricao));
 
-    card.append(shot, panel);
+    card.append(head, shot);
     card.addEventListener("click", (e) => {
       if (justDragged) { e.preventDefault(); return; }
       if (i !== cur) { e.preventDefault(); goTo(i); }
@@ -98,9 +99,9 @@
     cards.forEach(({ card }, i) => {
       const d = mod(i - pos + N / 2, N) - N / 2;
       const ad = Math.abs(d), sg = d < 0 ? -1 : 1;
-      const x = sg * (Math.min(ad, 1) * 0.8 + Math.max(ad - 1, 0) * 0.36) * sp;
+      const x = sg * (Math.min(ad, 1) * 0.94 + Math.max(ad - 1, 0) * 0.4) * sp;
       const zz = -0.42 * Math.min(ad, 2) * sp;
-      const ry = -clamp(d * 42, -52, 52) * sp;
+      const ry = -clamp(d * 38, -48, 48) * sp;
       const s = 1;
       const edge = N >= 3 ? (N / 2 - ad) / 0.5 : 1;
       const o = clamp(Math.min(edge, (2.7 - ad) / 0.7), 0, 1);
@@ -206,13 +207,13 @@
     const dt = now - drag.lt;
     if (dt > 0) drag.vx = (e.clientX - drag.lx) / dt;
     drag.lx = e.clientX; drag.lt = now;
-    const stepPx = track.offsetWidth * 0.8;
+    const stepPx = track.offsetWidth * 0.94;
     pos = target = drag.from - dx / stepPx;
   });
   function endDrag(e) {
     if (!drag || e.pointerId !== drag.id) return;
     if (drag.moved) {
-      const stepPx = track.offsetWidth * 0.8;
+      const stepPx = track.offsetWidth * 0.94;
       const proj = clamp(-drag.vx * 180 / stepPx, -1.5, 1.5);
       target = Math.round(pos + proj);
       justDragged = true;
