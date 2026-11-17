@@ -7,7 +7,7 @@ Página inicial que reúne as ferramentas. Site estático, sem build: abra `inde
 ```
 index.html  hub.css  hub.js     a página (não precisa mexer)
 ferramentas.js                  a lista de ferramentas (é aqui que você edita)
-assets/                         fonte Host Grotesk, logo (logo.svg), cards/ (imagens dos mascotes) e nomes/ (logotipos)
+assets/                         fonte Host Grotesk, logo (logo.svg), cards/ (bichos e molduras) e nomes/ (logotipos)
 mutatu/  mimico/  sabia/        uma pasta por ferramenta
 ```
 
@@ -18,16 +18,17 @@ Substitua o conteúdo da pasta dela. O hub abre `pasta/index.html`, então o arq
 ## Adicionar uma ferramenta
 
 1. Crie a pasta e coloque o `index.html` dela.
-2. Copie um bloco em `ferramentas.js` e ajuste nome, bicho, pasta, descrição e cores.
-3. Coloque a imagem quadrada do card em `assets/cards/` (720 a 1080 px, WebP ou JPG), o fundo da moldura (opcional, também em `assets/cards/`) e o logotipo em SVG em `assets/nomes/`. A largura do logotipo e a cor do texto são definidas em `ferramentas.js` (`nomeLargura` e `corTexto`).
+2. Copie um bloco em `ferramentas.js` e ajuste nome, pasta, texto, cores e gradiente.
+3. Coloque em `assets/cards/` o bicho recortado (PNG ou WebP com fundo transparente, proporção 3:4, uns 800 px de largura) e a moldura (`fundo`, opcional).
+4. Coloque em `assets/nomes/` o logotipo em SVG (versão para fundo colorido) e informe a posição dele em `nomePosicao` (em % do card).
 
-## Trocar a imagem ou o logotipo de um card
+## Trocar o bicho ou o logotipo de um card
 
-Substitua o arquivo em `assets/cards/` (mantenha o nome ou ajuste `imagem` em `ferramentas.js`). O logotipo é o `nomeImagem` da ferramenta; se não houver, o nome aparece em texto.
+Substitua o arquivo em `assets/cards/` ou `assets/nomes/` (mantenha o nome do arquivo ou ajuste o caminho em `ferramentas.js`). Se o novo bicho tiver outro enquadramento, ajuste `mascote` (esquerda, topo, largura, altura e corte, em %).
 
 ## Estados
 
-`estado: "no_ar" | "teste" | "breve"`. Em `"breve"` o botão fica desativado.
+`estado: "no_ar" | "teste" | "breve"`. Em `"breve"` a seta do card fica desativada.
 
 ## Publicar
 

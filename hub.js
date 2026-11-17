@@ -4,7 +4,6 @@
   const root = document.documentElement;
   const stage = document.querySelector(".stage");
   const track = document.querySelector(".track");
-  const dotsEl = document.querySelector(".dots");
   const live = document.getElementById("live");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -26,68 +25,66 @@
     return e;
   };
 
-  /* ---------- monta cards e pontos ---------- */
+  /* ---------- monta os cards ---------- */
+  const SETA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>';
   const cards = tools.map((t, i) => {
     const card = el("article", "card");
-    card.style.setProperty("--ca", t.cores[0]);
-    card.style.setProperty("--cb", t.cores[1]);
-    if (t.corTexto) card.style.setProperty("--desc", t.corTexto);
-    if (t.nomeLargura) card.style.setProperty("--nome-w", t.nomeLargura);
-    if (t.fundo) {
-      card.style.backgroundImage = `url("${t.fundo}")`;
-      card.style.backgroundSize = "100% 100%";
-    }
+    card.style.setProperty("--grad", t.gradiente);
+    if (t.fundo) card.style.backgroundImage = `url("${t.fundo}")`;
     card.setAttribute("aria-label", `${t.nome}, ${i + 1} de ${N}`);
 
-    const shot = el("div", "shot");
-    const img = el("img");
-    img.src = t.imagem;
-    img.alt = "";
-    img.draggable = false;
-    img.decoding = "async";
-    shot.append(img);
+    const face = el("div", "face");
 
-    const head = el("div", "head");
-    const row = el("div", "row");
-    const h2 = el("h2");
-    if (t.nomeImagem) {
-      const nm = el("img", "nome");
+    const titulo = el("h2", "titulo");
+    if (t.nomeImagem && t.nomePosicao) {
+      titulo.style.left = t.nomePosicao.esquerda + "%";
+      titulo.style.top = t.nomePosicao.topo + "%";
+      titulo.style.width = t.nomePosicao.largura + "%";
+      const nm = el("img");
       nm.src = t.nomeImagem;
       nm.alt = t.nome;
       nm.draggable = false;
-      h2.append(nm);
+      titulo.append(nm);
     } else {
-      h2.textContent = t.nome;
+      titulo.classList.add("texto");
+      titulo.textContent = t.nome;
     }
+
+    const desc = el("p", "desc", t.descricao);
+
+    const m = Object.assign({ esquerda: 0, topo: -1.413, largura: 100, altura: 101.62, corte: 36.82 }, t.mascote || {});
+    const bicho = el("img", "bicho");
+    bicho.src = t.imagem;
+    bicho.alt = "";
+    bicho.draggable = false;
+    bicho.decoding = "async";
+    bicho.style.left = m.esquerda + "%";
+    bicho.style.top = m.topo + "%";
+    bicho.style.width = m.largura + "%";
+    bicho.style.height = m.altura + "%";
+    bicho.style.clipPath = `inset(${m.corte}% 0 0 0)`;
+
+    face.append(titulo, desc, bicho);
+
     let btn;
     if (t.estado === "breve") {
-      btn = el("span", "btn", "Em breve");
+      btn = el("span", "go");
       btn.setAttribute("aria-disabled", "true");
+      btn.setAttribute("aria-label", `${t.nome}: em breve`);
     } else {
-      btn = el("a", "btn", "Abrir");
+      btn = el("a", "go");
       btn.href = t.pasta + (t.entrada || "index.html");
       btn.setAttribute("aria-label", `Abrir ${t.nome}`);
     }
-    row.append(h2, btn);
-    head.append(row, el("p", null, t.descricao));
+    btn.insertAdjacentHTML("beforeend", SETA);
 
-    card.append(head, shot);
+    card.append(face, btn);
     card.addEventListener("click", (e) => {
       if (justDragged) { e.preventDefault(); return; }
       if (i !== cur) { e.preventDefault(); goTo(i); }
     });
     track.append(card);
     return { card, btn };
-  });
-
-  const dots = tools.map((t, i) => {
-    const b = el("button", "dot");
-    b.type = "button";
-    b.setAttribute("aria-label", `Ir para ${t.nome}`);
-    b.append(el("i"));
-    b.addEventListener("click", () => goTo(i));
-    dotsEl.append(b);
-    return b;
   });
 
   /* ---------- estado e desenho ---------- */
@@ -128,7 +125,6 @@
       card.classList.toggle("on", k === i);
       if (btn.tagName === "A") btn.tabIndex = k === i ? 0 : -1;
     });
-    dots.forEach((b, k) => b.setAttribute("aria-current", k === i ? "true" : "false"));
     if (!first) live.textContent = `${t.nome}, ${i + 1} de ${N}`;
   }
 
@@ -156,8 +152,6 @@
   }
   const step = (n) => { target = Math.round(target) + n; kick(); };
 
-  document.querySelector(".prev").addEventListener("click", () => step(-1));
-  document.querySelector(".next").addEventListener("click", () => step(1));
 
   document.addEventListener("keydown", (e) => {
     if (e.altKey || e.ctrlKey || e.metaKey) return;

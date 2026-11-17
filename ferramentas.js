@@ -1,52 +1,55 @@
 /* Lista de ferramentas do hub. Para adicionar, trocar ou reordenar, edite só este arquivo.
-   nome         : nome da ferramenta (acessibilidade e texto, se não houver logotipo)
+   nome         : nome da ferramenta (acessibilidade)
    pasta        : pasta da ferramenta (o hub abre pasta/index.html)
    entrada      : (opcional) outro arquivo de entrada dentro da pasta, se não for index.html
-   estado       : "no_ar" | "teste" | "breve"  ("breve" deixa o botão desativado)
-   cores        : [cor A, cor B] do gradiente do botão, do brilho do card e do fundo da página
-   corTexto     : (opcional) cor da descrição
-   imagem       : imagem quadrada do card (mascote), ideal 720 a 1080 px, em WebP ou JPG
-   fundo        : (opcional) imagem de fundo da moldura do card; sem ela usa um brilho com as cores
-   nomeImagem   : (opcional) logotipo em SVG; sem ele o nome aparece em texto
-   nomeLargura  : largura do logotipo como fração da largura do card (0.5 = metade) */
+   estado       : "no_ar" | "teste" | "breve"  ("breve" deixa a seta desativada)
+   descricao    : texto curto do card; use \n para quebrar a linha onde quiser
+   cores        : [cor A, cor B] usadas nas manchas de cor do fundo da página
+   gradiente    : fundo do card (CSS linear-gradient)
+   fundo        : imagem da moldura do card (WebP)
+   imagem       : bicho recortado, PNG/WebP com fundo transparente (proporção 3:4)
+   nomeImagem   : logotipo em SVG (versão para fundo colorido)
+   nomePosicao  : posição do logotipo em % do card: esquerda, topo, largura
+   mascote      : (opcional) ajuste fino do bicho em %: esquerda, topo, largura, altura, corte */
 window.FERRAMENTAS = [
   {
     nome: "Mu.Tatu",
     bicho: "tatu",
     pasta: "mutatu/",
     estado: "teste",
-    descricao: "Converta e comprima arquivos sem enviar para a internet.",
-    cores: ["#8bbc34", "#aad000"],
-    corTexto: "#8c99b9",
-    imagem: "assets/cards/mutatu.webp",
+    descricao: "Converta e comprima arquivos\nsem enviar para a internet.",
+    cores: ["#81b33d", "#c4ed55"],
+    gradiente: "linear-gradient(18.35deg,#c4ed55 9.2%,#81b33d 84.4%)",
     fundo: "assets/cards/fundo-mutatu.webp",
-    nomeImagem: "assets/nomes/mutatu.svg",
-    nomeLargura: 0.6436
+    imagem: "assets/cards/mutatu.webp",
+    nomeImagem: "assets/nomes/mutatu-alt.svg",
+    nomePosicao: { esquerda: 15.832, topo: 9.691, largura: 68.178 },
+    mascote: { esquerda: -2.134, topo: -5.053, largura: 104.27, altura: 105.96, corte: 38.74 }
   },
   {
     nome: "Mi.Mico",
     bicho: "mico",
     pasta: "mimico/",
     estado: "teste",
-    descricao: "Simule elementos e interfaces para usar nos seus designs.",
-    cores: ["#ff9400", "#ffb400"],
-    corTexto: "#95a2c2",
-    imagem: "assets/cards/mimico.webp",
+    descricao: "Simule elementos e interfaces\npara usar nos seus designs.",
+    cores: ["#ff9400", "#fdc300"],
+    gradiente: "linear-gradient(39.93deg,#fdc300 8.3%,#ff9400 82.6%)",
     fundo: "assets/cards/fundo-mimico.webp",
-    nomeImagem: "assets/nomes/mimico.svg",
-    nomeLargura: 0.6071
+    imagem: "assets/cards/mimico.webp",
+    nomeImagem: "assets/nomes/mimico-alt.svg",
+    nomePosicao: { esquerda: 17.762, topo: 11.313, largura: 64.319 }
   },
   {
     nome: "Sab.IA",
     bicho: "sabiá",
     pasta: "sabia/",
     estado: "teste",
-    descricao: "Ferramentas de I.A. que rodam no seu navegador",
-    cores: ["#6249e2", "#8a6aff"],
-    corTexto: "#8c99b9",
-    imagem: "assets/cards/sabia.webp",
+    descricao: "Ferramentas de I.A. que rodam\nno seu navegador",
+    cores: ["#6249e2", "#90b9ff"],
+    gradiente: "linear-gradient(1.36deg,#90b9ff 11.7%,#6249e2 95.1%)",
     fundo: "assets/cards/fundo-sabia.webp",
-    nomeImagem: "assets/nomes/sabia.svg",
-    nomeLargura: 0.5128
+    imagem: "assets/cards/sabia.webp",
+    nomeImagem: "assets/nomes/sabia-alt.svg",
+    nomePosicao: { esquerda: 22.759, topo: 11.124, largura: 54.325 }
   }
 ];
