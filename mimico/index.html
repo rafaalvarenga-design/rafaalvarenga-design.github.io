@@ -330,7 +330,7 @@ textarea::placeholder{color:var(--slate);opacity:1}
     <div class="stage"><section class="glass" id="waView"><div id="waPv"></div>
       <div class="dock"><select id="waMode" aria-label="O que baixar"><option value="t">Tela</option><option value="b">Balões</option></select><select id="waSc" aria-label="Escala do PNG"><option value="1">1x</option><option value="2">2x</option><option value="3" selected>3x</option><option value="4">4x</option></select><button class="p" id="waPng" type="button">Baixar PNG</button><button id="waSvg" type="button" disabled>SVG (balões)</button></div><p class="fh" id="waMsg" role="status"></p>
       </section>
-    <section class="glass" id="waSide"><div class="sh"><h2>Conversa</h2></div><p class="fh">Simulação para mockups, demonstrações e estudos de design. Não use para fingir conversas reais nem para enganar alguém.</p><div id="waForm" class="fv"></div></section></div>
+    <section class="glass" id="waSide"><button type="button" id="waHd" aria-expanded="false"><i></i><span>Editar conversa</span></button><div class="sh"><h2>Conversa</h2></div><p class="fh">Simulação para mockups, demonstrações e estudos de design. Não use para fingir conversas reais nem para enganar alguém.</p><div id="waForm" class="fv"></div></section></div>
   </main>
 </div>
 
@@ -343,6 +343,18 @@ body.wa-on{overflow:hidden}html:has(body.wa-on){overflow:hidden}body.wa-on .foot
 #waView,#waSide{padding:var(--s4);min-width:0}#waSide{overflow:auto;min-height:0;scroll-padding-top:120px}
 #waView{display:flex;flex-direction:column;min-height:0}
 #waPv{display:flex;flex:none;min-height:0;height:30vh;overflow:auto;border-radius:var(--r)}#waFit{margin:auto}
+#waHd{display:none}
+@media(max-width:899px){
+#waView{padding:var(--s2) var(--s3)}
+#waPv{height:min(34vh,260px);height:min(34dvh,260px)}
+#waSide .sh{display:none}
+@media(max-height:720px){#waPv{height:min(22vh,150px);height:min(22dvh,150px)}}
+#waHd{display:flex;align-items:center;justify-content:center;gap:10px;position:sticky;top:calc(var(--s4) * -1);z-index:4;margin:calc(var(--s4) * -1) calc(var(--s4) * -1) var(--s3);padding:0 var(--s4);min-height:48px;width:calc(100% + var(--s4) * 2);border:0;background:rgba(244,245,251,.96);font:inherit;font-weight:600;cursor:pointer;color:inherit}
+#waHd i{width:36px;height:4px;border-radius:2px;background:currentColor;opacity:.35}
+#wam.open #waSide{position:fixed;inset:0;z-index:1000;border-radius:0;background:#F4F5FB}
+}
+@media(min-width:900px){#waView{padding:var(--s4)}}
+#wam .dock select,#wam .dock button{min-height:44px}
 #waPv.bl{background:repeating-conic-gradient(var(--stage-a) 0 25%,var(--stage-b) 0 50%) 0 0/16px 16px}
 #waPv svg{max-width:100%;height:auto}
 #waFit{flex:none;overflow:hidden;border-radius:38px;box-shadow:0 8px 24px rgba(17,27,33,.18)}
@@ -747,8 +759,8 @@ const svgB=()=>{const P=S.th=='d'?{i:'#202C33',o:'#005C4B',x:'#E9EDEF',m:'#8696A
   else{cx.font=`12.5px ${FF}`;w=Math.ceil(cx.measureText(x.text).width)+20;h=24;o+=`<rect x="${(W-w)/2}" y="${y+4}" width="${w}" height="${h}" rx="8" fill="${P.i}"/><text x="${W/2}" y="${y+20}" text-anchor="middle" font-size="12.5" fill="${P.m}">${E(x.text)}</text>`;y+=8;cx.font=`15px ${FF}`}
   const q=S.bl[n-1],f=B.includes(x.t)&&(!q||q.side!=x.side||!B.includes(q.t));if(f){const X=X0(w);o+=`<path d="${r?`M${X+w-1} ${y}h8l-8 12z`:`M${X+1} ${y}h-8l8 12z`}" fill="${fl}"/>`}const nx=S.bl[n+1];y+=h+(nx&&nx.side==x.side&&B.includes(nx.t)&&B.includes(x.t)?2:6)});
  return`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${y+6}" viewBox="0 0 ${W} ${y+6}" font-family="${E(FF)}">${o}</svg>`};
-const fit=()=>{if(!b.classList.contains('wa-on'))return;let dk=$('#waDk');if(!dk){dk=document.createElement('div');dk.id='waDk';$('#waView').append(dk);dk.append($('#waView .dock'),$('#waMsg'))}const mob=innerWidth<900,tg=mob?$('#waSide'):$('#waView');if(dk.parentNode!==tg)mob?tg.prepend(dk):tg.append(dk);scrollTo(0,0);const m=$('#wam');m.style.height=Math.max(320,innerHeight-m.getBoundingClientRect().top-32)+'px'};
-const draw=()=>{fit();const bl=S.mode=='b',pv=$('#waPv');pv.className=bl?'bl':'';if(bl)pv.innerHTML=svgB();else{const w=pv.clientWidth||390;pv.innerHTML=`<div id="waFit"><div style="transform-origin:0 0">${scr()}</div></div>`;const e=pv.querySelector('.wa'),H=e.offsetHeight,k=Math.min(1,w/390,((pv.clientHeight||H)-8)/Math.min(H,900));pv.firstChild.style.cssText=`width:${390*k}px;height:${H*k}px`;e.parentNode.style.transform=`scale(${k})`}$('#waSvg').disabled=!bl;$('#waSvg').textContent=bl?'Baixar SVG':'SVG (balões)'};
+const fit=()=>{if(!b.classList.contains('wa-on'))return;let dk=$('#waDk');if(!dk){dk=document.createElement('div');dk.id='waDk';$('#waView').append(dk);dk.append($('#waView .dock'),$('#waMsg'))}if(dk.parentNode!==$('#waView'))$('#waView').append(dk);scrollTo(0,0);const m=$('#wam');m.style.height=Math.max(320,((window.visualViewport&&visualViewport.height)||innerHeight)-m.getBoundingClientRect().top-32)+'px'};
+const draw=()=>{fit();const bl=S.mode=='b',pv=$('#waPv'),mob=innerWidth<900;pv.className=bl?'bl':'';if(bl)pv.innerHTML=svgB();else{const w=pv.clientWidth||390;pv.innerHTML=`<div id="waFit"><div style="transform-origin:0 0">${scr()}</div></div>`;const e=pv.querySelector('.wa'),H=e.offsetHeight,k=mob?Math.min(1,w/390):Math.min(1,w/390,((pv.clientHeight||H)-8)/Math.min(H,900));pv.firstChild.style.cssText=`width:${390*k}px;height:${H*k}px;border-radius:${38*k}px`;e.parentNode.style.transform=`scale(${k})`}if(mob)pv.scrollTop=pv.scrollHeight;$('#waSvg').disabled=!bl;$('#waPng').textContent=mob?'PNG':'Baixar PNG';$('#waSvg').textContent=mob?'SVG':bl?'Baixar SVG':'SVG (balões)'};
 /* formulário */
 const sel=(k,v,o,i)=>`<select data-k="${k}"${i==null?'':` data-i="${i}"`}>${o.map(([a,l])=>`<option value="${a}"${String(v)==String(a)?' selected':''}>${l}</option>`).join('')}</select>`;
 const lab=(l,h)=>`<label>${l}${h}</label>`;
@@ -795,6 +807,10 @@ tabs.onclick=e=>{const t=e.target.closest('.tab');if(t)set(t.dataset.w)};
 $('#hubWa').onclick=()=>{$('#hubGo').click();set('w');setTimeout(()=>{try{history.replaceState(null,'','#whatsapp')}catch(e){}draw()},400)};
 $('#hubGo').addEventListener('click',()=>set('s'));
 if(location.hash=='#whatsapp'){b.classList.remove('on-hub');set('w')}
+const hd=$('#waHd'),wm2=$('#wam'),setO=o=>{wm2.classList.toggle('open',o);hd.setAttribute('aria-expanded',o);hd.lastElementChild.textContent=o?'Ver prévia':'Editar conversa';if(!o)draw()};
+hd.onclick=()=>setO(!wm2.classList.contains('open'));
+$('#waSide').addEventListener('focusin',e=>{if(innerWidth<900&&!wm2.classList.contains('open')&&/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName))setO(true)});
+addEventListener('resize',()=>{if(innerWidth>=900&&wm2.classList.contains('open'))setO(false)});
 form();draw()})();
 </script>
 </body></html>
