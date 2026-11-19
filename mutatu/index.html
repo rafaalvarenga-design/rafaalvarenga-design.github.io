@@ -286,7 +286,8 @@ label.chk input:checked::after{transform:scale(1)}
   .home .drop b{font-size:var(--drop-title)}.home .drop span{font-size:var(--drop-hint)}
   #homeMsg{font-size:14px}
   .balloon{display:none}
-  .hero-mascot{width:min(70vw,340px);align-self:flex-end;margin:auto calc(-1 * var(--s5)) 0 0}
+  .hero-mascot{position:relative;left:auto;top:auto;z-index:5;width:min(92vw,500px);align-self:flex-end;margin:calc(-1 * (var(--s5) + 32px)) calc(-1 * var(--s5)) 0 0}
+  #homeMsg{position:relative;z-index:6}
 }
 @media(max-width:820px){
   .shell{padding:var(--s4) var(--s4) var(--s5);gap:var(--s3)}
@@ -428,6 +429,7 @@ html.vt .fm-top{view-transition-name:vt-bar}
 .fm-top::before{content:"";position:absolute;inset:0;z-index:1;background:var(--fm-brand);
   border-radius:clamp(14px,1.05vw,20px);box-shadow:0 8px 20px rgba(129,179,61,.22)}
 .fm-top>*{position:relative;z-index:3}
+.fm-home{display:block;line-height:0;color:inherit;border-radius:8px}
 .fm-wm{display:block;height:clamp(18px,1.76vw,34px);width:auto}
 .fm-burger{width:48px;height:48px;padding:0;border:0;border-radius:12px;background:none;color:#fff;cursor:pointer;display:grid;place-items:center}
 .fm-burger:hover{background:rgba(255,255,255,.2)}
@@ -456,7 +458,7 @@ html.vt .fm-top{view-transition-name:vt-bar}
 </head>
 <body>
 <header class="fm-top">
-  <svg class="fm-wm" viewBox="82.10 53.53 246.45 35.80" role="img" aria-label="fera.mentas" fill="currentColor"><path d="M98.51,65.13c-.48.16-.96.2-1.44.28-2.6.32-5.48.48-7.92,1.2-.68,3.12-.8,6.04-.76,7.72,1.76-.36,3.4-1.04,5.28-1.04,1.08,0,3.92.84,4.12,2.48.16,1.2-1.24,1.32-2.08,1.48-2.4.44-4.92.68-7.24,1.32-.04,1.12-.04,4.04-.36,4.92-.28.68-1.04,1.52-2.12,1.52-.24,0-.52-.08-.76-.16-.8-.32-1.48-1.6-1.8-4.28-.16-1.16-.24-2.68-.32-4.6-.12-2.24.8-12.84,1.4-13,3.6-1,8.08-1.88,10.2-1.88,1.4,0,3.04.52,4,1.72.4.44.56.76.6,1.08.08.68-.36,1.04-.8,1.24Z"/><path d="M114.55,61.05c-1.96.44-4.08.8-4.92.96-.8.16-1.44.32-1.92.44-.28,2.2-.76,8.6-1.04,11.4,1.72-.56,2.88-1.12,4.8-1.16,2.56-.04,5.12,1.56,5.2,2.4-.08,1.08-1.84,2.04-2.96,2.04h-.36c-1.64,0-4.88,1.16-6.56,1.64.04.2.04.48.08.84.08.64.16,1.36.2,1.96.04.4.04.68.12.84.64-.12,1.28-.32,1.96-.52,1.08-.28,2.4-.6,3.2-.6,1.32,0,4.72,1.16,4.8,1.96.2,1.72-5.88,3.04-7.2,3.4-1,.24-2.04.72-3.04.72-.8,0-1.88-.28-2.6-1.2-1.16-1.44-1.8-3.8-2.08-6.24-.48-3.76-.32-8.32-.04-12,.28-3.52.64-6.16.68-6.48-.08-.52-.44-1-.52-1.6-.04-.48.08-1.32,1.08-1.48,2-.28,3.96-.72,5.6-1.08,1.72-.36,3.28-.64,4.4-.64.92,0,4.8,1.04,4.92,2.68.04.52-1.72,1.24-3.8,1.72Z"/><path d="M130.51,76.29c1.76,1.08,4.08,2.32,6.2,3.56.32.2.64.52.72,1,.08.84-1.44,1.72-2.76,1.72-1.24,0-2.28-.72-3.36-1.36-1.68-1.04-3.32-2.24-5.12-3.08.28,1.28.8,2.92.88,3.52.16,1.2-1.12,1.6-2,1.6s-1.92-.32-2.6-1.24c-.8-1.16-1.56-4-1.92-6.96-.12-.84-.16-1.72-.2-2.6-.16-4.12.8-9.96,1.44-10.04,2.4-.28,4.76-.4,6.92-.4,3.72,0,6.88.36,8.36.84,2.52.8,5.72,2.64,6,4.88.44,3.76-9.76,7.64-12.56,8.56ZM129.79,65.53c-1.12,0-2.24.04-3.32.12-.52,2-.84,5.2-.68,7.72,3.6-1.12,11.76-4.88,11.68-6.68-.76-.64-3.92-1.16-7.68-1.16Z"/><path d="M164.19,82.44c-1,0-2.48-.48-3.08-1.32-.56-.72-1.36-4.24-1.68-5.32-3.56,1-8.56,1.64-10.04,1.84-1.2,2.4-2.04,4.96-3.04,7.44-.28.64-.52,1.12-.68,1.36-.36.56-1.68.96-2.4.96-.8,0-1.48-.44-1.52-1.16-.24-4.28,9.72-25.72,10.68-26.36,1.04-.68,2.28-.96,3.32-.96.84,0,1.84.2,2.44.88,2.56,2.88,7.48,17,7.92,20.6.16,1.32-.44,2.04-1.92,2.04ZM155.19,63.61c-.72,1.08-2.48,5.16-4.04,9.2,3.24-1.16,5.56-1.6,6.88-1.72-.72-2-2.24-6.28-2.84-7.48Z"/><path d="M173.99,85.2c-1.92.08-3.16-2-3.32-3.24-.08-.72.04-1.64.8-2.28.64-.68,1.76-.96,2.72-.96,1.48,0,3.28.72,3.52,2.36.16,1.6-1.36,4.04-3.72,4.12Z"/><path d="M208.63,78.4c-.28,1.08-2.12,1.76-3.04,1.76-2.36,0-3.52-5-3.88-6.6-1.4,1.24-4.32,4.64-5.24,5.72-.52.6-1.32.72-2,.72-.96,0-2.36-.32-3-1-.68-.72-1.48-5.52-1.72-6.84-2.08,3.04-4.12,6.56-5.12,8.2-.36.6-1.36.72-1.84.72-.92,0-1.96-.52-2.04-1.28-.16-1.16,7.64-14.36,8.36-15.24.72-.88,1.96-1.64,3.08-1.64.72,0,1.52.4,1.8,1.28.12.48.28,1.16.4,1.96.36,2.48.64,5,1.36,7.48,1.84-1.64,3.92-3.52,4.68-4.32.84-.84,2.56-1.72,3.8-1.72.28,0,.68.04,1.04.28.8.52,3.12,7.36,3.4,9.64,0,.28.04.6-.04.88Z"/><path d="M226.03,61.05c-1.96.44-4.08.8-4.92.96-.8.16-1.44.32-1.92.44-.28,2.2-.76,8.6-1.04,11.4,1.72-.56,2.88-1.12,4.8-1.16,2.56-.04,5.12,1.56,5.2,2.4-.08,1.08-1.84,2.04-2.96,2.04h-.36c-1.64,0-4.88,1.16-6.56,1.64.04.2.04.48.08.84.08.64.16,1.36.2,1.96.04.4.04.68.12.84.64-.12,1.28-.32,1.96-.52,1.08-.28,2.4-.6,3.2-.6,1.32,0,4.72,1.16,4.8,1.96.2,1.72-5.88,3.04-7.2,3.4-1,.24-2.04.72-3.04.72-.8,0-1.88-.28-2.6-1.2-1.16-1.44-1.8-3.8-2.08-6.24-.48-3.76-.32-8.32-.04-12,.28-3.52.64-6.16.68-6.48-.08-.52-.44-1-.52-1.6-.04-.48.08-1.32,1.08-1.48,2-.28,3.96-.72,5.6-1.08,1.72-.36,3.28-.64,4.4-.64.92,0,4.8,1.04,4.92,2.68.04.52-1.72,1.24-3.8,1.72Z"/><path d="M254.27,79.32c.12,1.52-2.24,2.12-3.16,2.12-.36,0-.84-.04-1.24-.28-1-.64-3.76-3.36-6.44-6-1.64-1.64-3.32-3.32-5.08-4.92.2,4.04.36,10.68.2,12.4-.04.64-.48,1.24-1.32,1.24-1.64,0-3.48-2.24-3.64-3.48-.24-2.12.32-13.92.04-16.72-.08-1.08,1.28-1.72,2.32-1.72.32,0,.84.08,1.28.36.52.4,3.64,3.48,6.68,6.52,2.04,2.04,4.16,4.12,5.56,5.56-.16-3.96-.4-12.48,0-14.92.12-.76.76-1.04,1.36-1.04,1.8,0,3.52,1.84,3.76,3.44.08.64.08,1.64,0,2.84-.24,4.88-.64,9.68-.32,14.6Z"/><path d="M278.43,57.73c-.44.2-.96.28-1.44.4-1.76.36-3.52.64-5.28.96-.6.08-1.04.16-1.08.28-.48.88-.84,20.52-.92,23.32-.04,2.52-.12,4.44-.2,4.8-.08.44-.72.84-1.56.84-1.52,0-3.2-1.04-3.44-2.72-.16-1.56.08-8.24.32-14.44.2-4.52.4-8.88.52-10.92-1.44.36-2.96.84-4.48.8-1.4,0-3.76-1.28-3.92-2.6-.2-1.64,2.48-1.32,3.44-1.48,1.44-.24,3.04-.88,5.48-1.4,2.52-.56,5.92-1.04,10.84-1.04,1.04,0,2.32.72,2.48,1.84.08.72-.32,1.12-.76,1.36Z"/><path d="M297.39,82.44c-1,0-2.48-.48-3.08-1.32-.56-.72-1.36-4.24-1.68-5.32-3.56,1-8.56,1.64-10.04,1.84-1.2,2.4-2.04,4.96-3.04,7.44-.28.64-.52,1.12-.68,1.36-.36.56-1.68.96-2.4.96-.8,0-1.48-.44-1.52-1.16-.24-4.28,9.72-25.72,10.68-26.36,1.04-.68,2.28-.96,3.32-.96.84,0,1.84.2,2.44.88,2.56,2.88,7.48,17,7.92,20.6.16,1.32-.44,2.04-1.92,2.04ZM288.39,63.61c-.72,1.08-2.48,5.16-4.04,9.2,3.24-1.16,5.56-1.6,6.88-1.72-.72-2-2.24-6.28-2.84-7.48Z"/><path d="M325.11,65.69c-.28,0-.68-.04-1-.24-.28-.16-.8-.32-1.76-.32-4.96,0-14.6,3.64-16.68,5.76.36.12.88.24,1.52.36,2.08.44,9.88,2.04,11.2,2.84.68.4,2.48,2.16,2.64,3.72.08.6-.04,1.2-.64,1.64-1.28,1.04-8.04,4.04-9.72,4.04-1.52,0-4.44-1.16-4.56-2.2-.04-.24.08-.48.2-.68.8-1.28,9.2-2.72,9.36-3.64-.04-.04-.12,0-.2-.04-.24-.04-.64-.12-1-.2-3.2-.84-9.96-1.52-12.36-4-.52-.52-.8-1.44-.88-2.16-.12-1,0-2.44.8-3.2,1.88-1.76,11.72-6.44,19.16-6.44,2.4,0,4.4.72,6.08,2.64.12.16.24.36.28.6.08.72-1.44,1.52-2.44,1.52Z"/></svg>
+  <a class="fm-home" href="../index.html" title="Ir para a página inicial"><svg class="fm-wm" viewBox="82.10 53.53 246.45 35.80" role="img" aria-label="fera.mentas" fill="currentColor"><path d="M98.51,65.13c-.48.16-.96.2-1.44.28-2.6.32-5.48.48-7.92,1.2-.68,3.12-.8,6.04-.76,7.72,1.76-.36,3.4-1.04,5.28-1.04,1.08,0,3.92.84,4.12,2.48.16,1.2-1.24,1.32-2.08,1.48-2.4.44-4.92.68-7.24,1.32-.04,1.12-.04,4.04-.36,4.92-.28.68-1.04,1.52-2.12,1.52-.24,0-.52-.08-.76-.16-.8-.32-1.48-1.6-1.8-4.28-.16-1.16-.24-2.68-.32-4.6-.12-2.24.8-12.84,1.4-13,3.6-1,8.08-1.88,10.2-1.88,1.4,0,3.04.52,4,1.72.4.44.56.76.6,1.08.08.68-.36,1.04-.8,1.24Z"/><path d="M114.55,61.05c-1.96.44-4.08.8-4.92.96-.8.16-1.44.32-1.92.44-.28,2.2-.76,8.6-1.04,11.4,1.72-.56,2.88-1.12,4.8-1.16,2.56-.04,5.12,1.56,5.2,2.4-.08,1.08-1.84,2.04-2.96,2.04h-.36c-1.64,0-4.88,1.16-6.56,1.64.04.2.04.48.08.84.08.64.16,1.36.2,1.96.04.4.04.68.12.84.64-.12,1.28-.32,1.96-.52,1.08-.28,2.4-.6,3.2-.6,1.32,0,4.72,1.16,4.8,1.96.2,1.72-5.88,3.04-7.2,3.4-1,.24-2.04.72-3.04.72-.8,0-1.88-.28-2.6-1.2-1.16-1.44-1.8-3.8-2.08-6.24-.48-3.76-.32-8.32-.04-12,.28-3.52.64-6.16.68-6.48-.08-.52-.44-1-.52-1.6-.04-.48.08-1.32,1.08-1.48,2-.28,3.96-.72,5.6-1.08,1.72-.36,3.28-.64,4.4-.64.92,0,4.8,1.04,4.92,2.68.04.52-1.72,1.24-3.8,1.72Z"/><path d="M130.51,76.29c1.76,1.08,4.08,2.32,6.2,3.56.32.2.64.52.72,1,.08.84-1.44,1.72-2.76,1.72-1.24,0-2.28-.72-3.36-1.36-1.68-1.04-3.32-2.24-5.12-3.08.28,1.28.8,2.92.88,3.52.16,1.2-1.12,1.6-2,1.6s-1.92-.32-2.6-1.24c-.8-1.16-1.56-4-1.92-6.96-.12-.84-.16-1.72-.2-2.6-.16-4.12.8-9.96,1.44-10.04,2.4-.28,4.76-.4,6.92-.4,3.72,0,6.88.36,8.36.84,2.52.8,5.72,2.64,6,4.88.44,3.76-9.76,7.64-12.56,8.56ZM129.79,65.53c-1.12,0-2.24.04-3.32.12-.52,2-.84,5.2-.68,7.72,3.6-1.12,11.76-4.88,11.68-6.68-.76-.64-3.92-1.16-7.68-1.16Z"/><path d="M164.19,82.44c-1,0-2.48-.48-3.08-1.32-.56-.72-1.36-4.24-1.68-5.32-3.56,1-8.56,1.64-10.04,1.84-1.2,2.4-2.04,4.96-3.04,7.44-.28.64-.52,1.12-.68,1.36-.36.56-1.68.96-2.4.96-.8,0-1.48-.44-1.52-1.16-.24-4.28,9.72-25.72,10.68-26.36,1.04-.68,2.28-.96,3.32-.96.84,0,1.84.2,2.44.88,2.56,2.88,7.48,17,7.92,20.6.16,1.32-.44,2.04-1.92,2.04ZM155.19,63.61c-.72,1.08-2.48,5.16-4.04,9.2,3.24-1.16,5.56-1.6,6.88-1.72-.72-2-2.24-6.28-2.84-7.48Z"/><path d="M173.99,85.2c-1.92.08-3.16-2-3.32-3.24-.08-.72.04-1.64.8-2.28.64-.68,1.76-.96,2.72-.96,1.48,0,3.28.72,3.52,2.36.16,1.6-1.36,4.04-3.72,4.12Z"/><path d="M208.63,78.4c-.28,1.08-2.12,1.76-3.04,1.76-2.36,0-3.52-5-3.88-6.6-1.4,1.24-4.32,4.64-5.24,5.72-.52.6-1.32.72-2,.72-.96,0-2.36-.32-3-1-.68-.72-1.48-5.52-1.72-6.84-2.08,3.04-4.12,6.56-5.12,8.2-.36.6-1.36.72-1.84.72-.92,0-1.96-.52-2.04-1.28-.16-1.16,7.64-14.36,8.36-15.24.72-.88,1.96-1.64,3.08-1.64.72,0,1.52.4,1.8,1.28.12.48.28,1.16.4,1.96.36,2.48.64,5,1.36,7.48,1.84-1.64,3.92-3.52,4.68-4.32.84-.84,2.56-1.72,3.8-1.72.28,0,.68.04,1.04.28.8.52,3.12,7.36,3.4,9.64,0,.28.04.6-.04.88Z"/><path d="M226.03,61.05c-1.96.44-4.08.8-4.92.96-.8.16-1.44.32-1.92.44-.28,2.2-.76,8.6-1.04,11.4,1.72-.56,2.88-1.12,4.8-1.16,2.56-.04,5.12,1.56,5.2,2.4-.08,1.08-1.84,2.04-2.96,2.04h-.36c-1.64,0-4.88,1.16-6.56,1.64.04.2.04.48.08.84.08.64.16,1.36.2,1.96.04.4.04.68.12.84.64-.12,1.28-.32,1.96-.52,1.08-.28,2.4-.6,3.2-.6,1.32,0,4.72,1.16,4.8,1.96.2,1.72-5.88,3.04-7.2,3.4-1,.24-2.04.72-3.04.72-.8,0-1.88-.28-2.6-1.2-1.16-1.44-1.8-3.8-2.08-6.24-.48-3.76-.32-8.32-.04-12,.28-3.52.64-6.16.68-6.48-.08-.52-.44-1-.52-1.6-.04-.48.08-1.32,1.08-1.48,2-.28,3.96-.72,5.6-1.08,1.72-.36,3.28-.64,4.4-.64.92,0,4.8,1.04,4.92,2.68.04.52-1.72,1.24-3.8,1.72Z"/><path d="M254.27,79.32c.12,1.52-2.24,2.12-3.16,2.12-.36,0-.84-.04-1.24-.28-1-.64-3.76-3.36-6.44-6-1.64-1.64-3.32-3.32-5.08-4.92.2,4.04.36,10.68.2,12.4-.04.64-.48,1.24-1.32,1.24-1.64,0-3.48-2.24-3.64-3.48-.24-2.12.32-13.92.04-16.72-.08-1.08,1.28-1.72,2.32-1.72.32,0,.84.08,1.28.36.52.4,3.64,3.48,6.68,6.52,2.04,2.04,4.16,4.12,5.56,5.56-.16-3.96-.4-12.48,0-14.92.12-.76.76-1.04,1.36-1.04,1.8,0,3.52,1.84,3.76,3.44.08.64.08,1.64,0,2.84-.24,4.88-.64,9.68-.32,14.6Z"/><path d="M278.43,57.73c-.44.2-.96.28-1.44.4-1.76.36-3.52.64-5.28.96-.6.08-1.04.16-1.08.28-.48.88-.84,20.52-.92,23.32-.04,2.52-.12,4.44-.2,4.8-.08.44-.72.84-1.56.84-1.52,0-3.2-1.04-3.44-2.72-.16-1.56.08-8.24.32-14.44.2-4.52.4-8.88.52-10.92-1.44.36-2.96.84-4.48.8-1.4,0-3.76-1.28-3.92-2.6-.2-1.64,2.48-1.32,3.44-1.48,1.44-.24,3.04-.88,5.48-1.4,2.52-.56,5.92-1.04,10.84-1.04,1.04,0,2.32.72,2.48,1.84.08.72-.32,1.12-.76,1.36Z"/><path d="M297.39,82.44c-1,0-2.48-.48-3.08-1.32-.56-.72-1.36-4.24-1.68-5.32-3.56,1-8.56,1.64-10.04,1.84-1.2,2.4-2.04,4.96-3.04,7.44-.28.64-.52,1.12-.68,1.36-.36.56-1.68.96-2.4.96-.8,0-1.48-.44-1.52-1.16-.24-4.28,9.72-25.72,10.68-26.36,1.04-.68,2.28-.96,3.32-.96.84,0,1.84.2,2.44.88,2.56,2.88,7.48,17,7.92,20.6.16,1.32-.44,2.04-1.92,2.04ZM288.39,63.61c-.72,1.08-2.48,5.16-4.04,9.2,3.24-1.16,5.56-1.6,6.88-1.72-.72-2-2.24-6.28-2.84-7.48Z"/><path d="M325.11,65.69c-.28,0-.68-.04-1-.24-.28-.16-.8-.32-1.76-.32-4.96,0-14.6,3.64-16.68,5.76.36.12.88.24,1.52.36,2.08.44,9.88,2.04,11.2,2.84.68.4,2.48,2.16,2.64,3.72.08.6-.04,1.2-.64,1.64-1.28,1.04-8.04,4.04-9.72,4.04-1.52,0-4.44-1.16-4.56-2.2-.04-.24.08-.48.2-.68.8-1.28,9.2-2.72,9.36-3.64-.04-.04-.12,0-.2-.04-.24-.04-.64-.12-1-.2-3.2-.84-9.96-1.52-12.36-4-.52-.52-.8-1.44-.88-2.16-.12-1,0-2.44.8-3.2,1.88-1.76,11.72-6.44,19.16-6.44,2.4,0,4.4.72,6.08,2.64.12.16.24.36.28.6.08.72-1.44,1.52-2.44,1.52Z"/></svg></a>
   <button class="fm-burger" id="fmBtn" type="button" aria-label="Abrir menu de ferramentas" aria-expanded="false" aria-controls="fmMenu"><svg viewBox="1802.24 53.44 36.58 30.49" aria-hidden="true" fill="currentColor"><path d="M1806.26,76.53c9.95-.43,19.84-.53,29.78.11,1.04.07,1.83.97,1.76,2.01-.07.99-.88,1.75-1.85,1.76-9.7.24-19.47,1.22-29.09,2.5-4.4.45-5.01-6-.59-6.38h0Z"/><path d="M1806.13,54.78c10.05-.68,19.86-.17,29.87.09,2.38.13,2.41,3.61.03,3.77-9.62.61-19.54,1-29.03,2.49-4.38.64-5.27-5.79-.87-6.35h0Z"/><path d="M1834.29,63.68c-4.32.77-8.99,1.66-13.28,2.1-4.46.31-9.04.36-13.51.2-2.21-.04-2.47,3.16-.28,3.49,6.91.85,14.11,1.37,21,.68,2.31-.17,4.59-.37,6.9-.58,1.64-.15,2.84-1.61,2.69-3.24-.15-1.73-1.8-2.98-3.51-2.65h0Z"/></svg></button>
   <nav class="fm-menu" id="fmMenu" aria-label="Ferramentas fera.mentas">
     <h2>Ferramentas</h2>
@@ -495,7 +497,7 @@ html.vt .fm-top{view-transition-name:vt-bar}
       <button class="tab" role="tab" aria-controls="homeDrop" data-tab="image" aria-selected="false">Imagem</button>
     </div>
     <div class="drop" id="homeDrop" tabindex="0" role="button" aria-label="Escolher arquivos">
-      <b>Solte o vídeo aqui</b><span id="homeHint"></span>
+      <b>Solte o arquivo aqui ou clique para escolher.</b><span id="homeHint"></span>
       <input type="file" id="homeFile" hidden>
     </div>
     <p class="meta" id="homeMsg" aria-live="polite"></p>
@@ -519,7 +521,7 @@ html.vt .fm-top{view-transition-name:vt-bar}
     <main id="appMain">
       <div class="left">
         <div class="drop card work-drop" id="drop" tabindex="0" role="button" aria-label="Escolher arquivos">
-          <b>Solte o vídeo aqui ou clique para escolher</b>
+          <b>Solte o arquivo aqui ou clique para escolher.</b>
           <span id="dropHint">MP4, MOV, WebM e outros formatos de vídeo</span>
           <input type="file" id="file" multiple hidden>
         </div>
@@ -571,9 +573,9 @@ const EXT_MIME = {mp4:'video/mp4',m4v:'video/mp4',mov:'video/quicktime',webm:'vi
 /* alguns sistemas não informam o tipo do arquivo: nesse caso, o tipo vem da extensão */
 const fixType = fs => [...fs].map(f => { const m = EXT_MIME[(f.name.split('.').pop()||'').toLowerCase()]; return (f.type || !m) ? f : new File([f], f.name, {type:m, lastModified:f.lastModified}); });
 const CFG = {
-  image:{ title:'Solte o(s) arquivo(s) aqui ou clique para escolher', hint:'JPG, PNG, WebP e outros formatos de imagem', accept:'image/*,.heic,.avif', btn:'Converter imagens' },
-  audio:{ title:'Solte o áudio aqui ou clique para escolher', hint:'MP3, WAV, OGG e outros formatos de áudio', accept:'audio/*,.mp3,.wav,.ogg,.m4a,.flac,.opus', btn:'Converter áudio' },
-  video:{ title:'Solte o vídeo aqui ou clique para escolher', hint:'MP4, MOV, WebM e outros formatos de vídeo', accept:'video/*,.mov,.mkv,.m4v', btn:'Converter vídeos' }
+  image:{ title:'Solte os arquivos aqui ou clique para escolher.', hint:'JPG, PNG, WebP e outros formatos de imagem', accept:'image/*,.heic,.avif', btn:'Converter imagens' },
+  audio:{ title:'Solte o arquivo aqui ou clique para escolher.', hint:'MP3, WAV, OGG e outros formatos de áudio', accept:'audio/*,.mp3,.wav,.ogg,.m4a,.flac,.opus', btn:'Converter áudio' },
+  video:{ title:'Solte o arquivo aqui ou clique para escolher.', hint:'MP4, MOV, WebM e outros formatos de vídeo', accept:'video/*,.mov,.mkv,.m4v', btn:'Converter vídeos' }
 };
 const opts = {
   image:{fmt:'keep', q:100, w:0},
@@ -604,8 +606,8 @@ const CONTROLS = {
     <label>Formato de saída
       <select data-k="fmt">${sel('fmt',0,[['mp3','MP3'],['opus','Opus (WebM, bem leve)'],['wav','WAV (sem compressão)']].filter(([v])=>okFmt(v)))}</select></label>
     <label>Taxa de bits
-      <select data-k="br">${sel('br',0,[[64,'64 kbps (menor)'],[128,'128 kbps'],[192,'192 kbps'],[256,'256 kbps'],[320,'320 kbps (melhor)']])}</select></label>
-    <p class="hint">Opus é gravado em tempo real; MP3 e WAV são rápidos.</p>`,
+      <select data-k="br" ${opts.audio.fmt==='wav'?'disabled':''}>${sel('br',0,[[64,'64 kbps (menor)'],[128,'128 kbps'],[192,'192 kbps'],[256,'256 kbps'],[320,'320 kbps (melhor)']])}</select></label>
+    <p class="hint">${opts.audio.fmt==='wav' ? 'WAV não é comprimido, então a taxa de bits não se aplica.' : 'Opus é gravado em tempo real; MP3 é rápido.'}</p>`,
   video:()=>{ const mp3 = opts.video.fmt==='mp3'; return `
     <label>Formato de saída
       <select data-k="fmt">${sel('fmt',0,[['mp4','MP4 (H.264)'],['webm','WebM'],['mov','MOV (H.264)'],['gif','GIF animado'],['mp3','Somente áudio (MP3)']].filter(([v])=>okFmt(v)))}</select></label>
@@ -621,6 +623,9 @@ const CONTROLS = {
 };
 
 /* ---------- interface ---------- */
+const normExt = e => ({jpeg:'jpg', m4v:'mp4'})[e] || e;
+const outExt = () => { const o = opts[tab]; return tab==='image' ? (o.fmt==='keep' ? null : normExt(o.fmt)) : tab==='audio' ? (o.fmt==='opus' ? 'webm' : o.fmt) : o.fmt; };
+const isCompress = list => { const x = outExt(); return list.length>0 && list.every(i => x===null || normExt(extOf(i.file.name))===x); };
 const fmtSize = b => b>=1048576 ? (b/1048576).toFixed(1)+' MB' : Math.max(1,Math.round(b/1024))+' KB';
 const extOf = n => (n.split('.').pop()||'').toLowerCase();
 const baseOf = n => n.replace(/\.[^.]+$/,'');
@@ -634,11 +639,11 @@ function renderControls(){
 }
 function renderQueue(){
   const list = items[tab], q = $('#queue'), hasEd = list.length>0 && !!list[0].editor;
-  $('#queue').hidden = hasEd || tab==='video'; $('#drop').hidden = hasEd; $('#editor').hidden = !hasEd;
+  $('#queue').hidden = hasEd || tab==='video' || !list.length; $('#drop').hidden = hasEd; $('#editor').hidden = !hasEd;
   if(!hasEd && ED.it && ED.it.tab!==tab) ED.suspend();
   if(hasEd){ q.innerHTML=''; const eit = list[0]; if(ED.it===eit) ED.update(); else if(eit._dom) ED.resume(eit); }
   else if(tab==='video'){ q.innerHTML=''; }
-  else if(!list.length){ q.innerHTML = `<div class="empty"><p>Nenhum arquivo ainda.</p><img class="mascot" src="${ASSET.small}" alt="" width="180" height="113"></div>`; }
+  else if(!list.length){ q.innerHTML=''; }
   else q.innerHTML = list.map(it => {
     let meta = fmtSize(it.file.size);
     if(it.state==='done'){ const d = Math.round((1-it.out.size/it.file.size)*100);
@@ -662,9 +667,9 @@ function renderQueue(){
     q._seen = true; }
   const n = list.length, done = list.some(i=>i.state==='done');
   const rb = $('#run');
-  const rk = convBusy ? 'x' : 'c', rch = rb.dataset.k && rb.dataset.k !== rk; rb.dataset.k = rk;
+  const cmp = isCompress(list), rk = convBusy ? 'x' : (cmp ? 'p' : 'c'), rch = rb.dataset.k && rb.dataset.k !== rk; rb.dataset.k = rk;
   if(convBusy){ rb.innerHTML = IC.x+'<span>Cancelar conversão</span>'; rb.disabled = false; rb.classList.remove('primary'); }
-  else { rb.innerHTML = IC.conv+'<span>Converter</span>'; rb.classList.add('primary'); rb.disabled = busy || !list.some(i=>i.state!=='done' || i.stale); }
+  else { rb.innerHTML = IC.conv+'<span>'+(cmp?'Comprimir':'Converter')+'</span>'; rb.classList.add('primary'); rb.disabled = busy || !list.some(i=>i.state!=='done' || i.stale); }
   if(rch){ rb.classList.remove('swap'); void rb.offsetWidth; rb.classList.add('swap'); }
   $('#all').hidden = n===0; $('#all').innerHTML = IC.dl+'<span>'+(n>1?'Baixar todos':'Baixar')+'</span>'; $('#all').disabled = !done; $('#all').classList.toggle('primary', done);
   $('#clear').hidden = n<2; $('#clear').disabled = busy;
@@ -688,7 +693,7 @@ function renderProg(list){
   const w = list.find(i=>i.state==='working'), o = opts[tab];
   let h = '';
   if(w){
-    const what = (tab==='video' && o.fmt==='mp3') ? 'Extraindo áudio' : 'Convertendo';
+    const what = (tab==='video' && o.fmt==='mp3') ? 'Extraindo áudio' : isCompress(list) ? 'Comprimindo' : 'Convertendo';
     const nth = list.length>1 ? ` ${list.indexOf(w)+1}/${list.length}` : '';
     h = `<div class="work run"><img class="mascot" src="${ASSET.run}" alt="" width="64" height="58"><div class="grow"><div class="meta" role="status">${what+nth}</div><div class="pline"><div class="bar" role="progressbar" aria-label="Progresso da conversão" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="pgb"></i></div><b id="pgp">0%</b></div></div></div>`;
   } else if(list.length && list.every(i=>i.state==='done')){
@@ -814,7 +819,7 @@ async function doAudio(it, cfg){
   if(o.fmt==='wav'){ ctx.close(); return {blob:encWav(buf), ext:'wav'}; }
   if(o.fmt==='mp3'){
     ctx.close();
-    if(typeof lamejs==='undefined') throw new Error('Codificador MP3 não carregou. Verifique a internet e recarregue.');
+    if(typeof lamejs==='undefined') throw new Error('A ferramenta de MP3 não carregou. Verifique a internet e recarregue a página.');
     const n=Math.min(2,buf.numberOfChannels), enc=new lamejs.Mp3Encoder(n,buf.sampleRate,o.br);
     const L=clamp16(buf.getChannelData(0)), R=n>1?clamp16(buf.getChannelData(1)):null, out=[];
     for(let i=0,k=0;i<L.length;i+=1152,k++){
@@ -939,12 +944,12 @@ async function doVideo(it, ov){
   if(o.fmt==='mp3') return doAudio(it, edCfg(it,{fmt:'mp3',br:o.br}));
   const ed = it.edit || {rot:0,flip:false,vol:1,crop:null};
   const A = advOf(it);
-  if(gifOut && typeof GIF==='undefined') throw new Error('Codificador de GIF não carregou. Verifique a internet e recarregue.');
+  if(gifOut && typeof GIF==='undefined') throw new Error('A ferramenta de GIF não carregou. Verifique a internet e recarregue a página.');
   if(!gifOut && typeof MediaRecorder==='undefined') throw new Error('Este navegador não grava vídeo. Use o Chrome ou o Edge.');
   const url = URL.createObjectURL(it.file), v = document.createElement('video');
   v.src = url; v.playsInline = true; v.preload = 'auto';
   try{
-    await new Promise((res,rej)=>{ v.onloadedmetadata=res; v.onerror=()=>{ const c=v.error&&v.error.code; rej(new Error(c===4 ? 'Formato ou codec não suportado pelo navegador (comum em vídeos HEVC/H.265 de iPhone ou gravação de tela). Tente no computador com Chrome ou Edge, ou converta antes para H.264.' : c===3 ? 'O vídeo está corrompido ou usa um codec que o navegador não decodifica.' : 'O navegador não consegue ler este vídeo (código '+(c||'?')+').')); }; });
+    await new Promise((res,rej)=>{ v.onloadedmetadata=res; v.onerror=()=>{ const c=v.error&&v.error.code; rej(new Error(c===4 ? 'Este vídeo está num formato que o navegador não abre (comum em iPhone e gravações de tela). Tente no Chrome ou Edge, no computador.' : c===3 ? 'O vídeo parece corrompido ou está num formato que o navegador não abre.' : 'O navegador não consegue ler este vídeo (código '+(c||'?')+').')); }; });
     const geo = frameGeom(v,ed), edf = {...ed, ...fxOf(it,geo,!gifOut)};
     const stab = (A.stabOn && A.stab>0 && !gifOut) ? makeStab(v,A.stab) : null;
     const normG = (ed.norm && !gifOut) ? await normGainFor(it, ov?ov.ts:(it.trim?it.trim.s:0), ov?ov.te:(it.trim?it.trim.e:0)) : 1;
@@ -1022,8 +1027,13 @@ async function doImage(it){
   const g = c.getContext('2d');
   if(type==='image/jpeg'){ g.fillStyle='#fff'; g.fillRect(0,0,w,h); }
   g.drawImage(bmp,0,0,w,h);
-  const blob = await new Promise(r => c.toBlob(r, type, o.q/100));
+  let blob = await new Promise(r => c.toBlob(r, type, o.q/100));
   if(!blob || blob.type!==type) throw new Error('Este navegador não gera este formato.');
+  if(type===f.type && type!=='image/png' && o.q<100 && blob.size>=f.size){
+    let lo=.3, hi=o.q/100, best=null;
+    for(let i=0;i<6;i++){ const m=(lo+hi)/2, b=await new Promise(r=>c.toBlob(r,type,m)); if(b && b.size<f.size){ best=b; lo=m; } else hi=m; }
+    if(best) blob=best;
+  }
   const ext = type.split('/')[1].replace('jpeg','jpg');
   return {blob, ext};
 }
@@ -1166,7 +1176,7 @@ const ED = {
         <div class="tpanel" id="pFade" hidden>
           <label><span class="row">Fade de entrada <b data-o="fi">0 s</b></span><input type="range" min="0" max="5" step=".5" value="0" data-a="fi"></label>
           <label><span class="row">Fade de saída <b data-o="fo">0 s</b></span><input type="range" min="0" max="5" step=".5" value="0" data-a="fo"></label>
-          <p class="hint">Suaviza o começo e o fim do trecho, na imagem e no som.</p>
+          <p class="hint">Suaviza o começo e o fim do trecho, ${isV?'na imagem e no som':'no som'}.</p>
         </div>
         ${isV?`<div class="tpanel" id="pFilt" hidden>
           <label><span class="row">Brilho <b data-o="bri">100%</b></span><input type="range" min="50" max="150" value="100" data-a="bri"></label>
@@ -1197,7 +1207,7 @@ const ED = {
     }catch(e){
       if(this.it!==it) return;
       items[it.tab]=[]; this.close(); renderQueue();
-      setStatus(isV ? 'Este navegador não consegue ler este vídeo (comum em HEVC/H.265). Tente no Chrome ou Edge no computador, ou converta antes para H.264.' : 'Este navegador não consegue ler este áudio. Tente outro arquivo ou converta antes para MP3 ou WAV.');
+      setStatus(isV ? 'Este vídeo está num formato que o navegador não abre (comum em iPhone e gravações de tela). Tente no Chrome ou Edge, no computador.' : 'Este navegador não consegue ler este áudio. Tente outro arquivo ou converta antes para MP3 ou WAV.');
       return;
     }
     if(this.it!==it) return;
@@ -1504,7 +1514,7 @@ async function previewResult(){
     if(ab.v) return;
     prevUrl = URL.createObjectURL(r.blob);
     body.innerHTML = (audioOnly ? `<audio controls autoplay src="${prevUrl}"></audio>` : `<video controls autoplay loop playsinline src="${prevUrl}"></video>`)
-      + '<p class="hint">Amostra em resolução reduzida. O arquivo final usa os seus ajustes e a qualidade escolhida. Feche para voltar a ajustar.</p>';
+      + '<p class="hint">'+(audioOnly ? 'Amostra curta, só para conferir os ajustes.' : 'Amostra em resolução reduzida.')+' O arquivo final usa os seus ajustes e a qualidade escolhida. Feche para voltar a ajustar.</p>';
   }catch(e){ if(!ab.v) body.innerHTML = `<p class="meta err">${(e && e.message) || 'Não foi possível gerar a amostra.'}</p>`; }
   finally{ busy = false; renderQueue(); }
 }
@@ -1525,7 +1535,7 @@ $('#controls').addEventListener('input', e => {
   const v = e.target.value;
   opts[tab][k] = (k==='fmt'||k==='start'||k==='end') ? v : Number(v);
   if(k==='q') $('#qv').textContent = v+'%';
-  if(tab==='video' && k==='fmt') renderControls();
+  if((tab==='video'||tab==='audio') && k==='fmt') renderControls();
   savePrefs();
   // mudar ajustes reabre os arquivos já convertidos
   items[tab].forEach(i => { if(i.state==='done') i.stale = true; });
@@ -1659,7 +1669,6 @@ function routeFiles(files){
     enterApp(t);
     addFiles(use);
     const notes = [];
-  if(t!==homeTab) notes.push('Abri a aba '+KIND[t]+' pelo tipo do arquivo.');
     if(use.length<files.length) notes.push('Arquivos de outros tipos foram ignorados.');
     if(notes.length){ const cur = $('#status').textContent; setStatus((cur ? cur+' ' : '')+notes.join(' ')); }
   });
