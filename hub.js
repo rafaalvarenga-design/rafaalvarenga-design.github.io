@@ -26,7 +26,7 @@
   };
 
   /* ---------- monta os cards ---------- */
-  const SETA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>';
+  const SETA = '<svg viewBox="0 0 98.1 37.04" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="1" width="96.1" height="35.04" rx="17.52"/><path d="M22.08 18.52h53.94"/><path d="M66.2 8.7l9.82 9.82-9.82 9.82"/></svg>';
   const cards = tools.map((t, i) => {
     const card = el("article", "card");
     card.style.setProperty("--grad", t.gradiente);
@@ -36,10 +36,8 @@
     const face = el("div", "face");
 
     const titulo = el("h2", "titulo");
-    if (t.nomeImagem && t.nomePosicao) {
-      titulo.style.left = t.nomePosicao.esquerda + "%";
-      titulo.style.top = t.nomePosicao.topo + "%";
-      titulo.style.width = t.nomePosicao.largura + "%";
+    if (t.nomeImagem && t.nomeLargura) {
+      titulo.style.setProperty("--nw", t.nomeLargura / 100);
       const nm = el("img");
       nm.src = t.nomeImagem;
       nm.alt = t.nome;
@@ -91,25 +89,38 @@
   let pos = 0, target = 0, spread = reduce.matches ? 1 : 0;
   let cur = -1, raf = 0, last = 0, dragging = false, justDragged = false;
 
+  /* posições do leque (medidas no desenho de 1920x1080, em fração da largura do card central) */
+  const SLOT = {
+    L: { tx: -0.7833, ty: 0.0879, r: -14.33, sx: 0.74, sy: 0.84, k: 1.53 },
+    R: { tx: 0.8132, ty: 0.0841, r: 9.5451, sx: 0.7447, sy: 0.8344, k: -1.0427 }
+  };
+
   function draw() {
     const sp = 1 - Math.pow(1 - spread, 3);
     cards.forEach(({ card }, i) => {
       const d = mod(i - pos + N / 2, N) - N / 2;
       const ad = Math.abs(d), sg = d < 0 ? -1 : 1;
-      const x = sg * (Math.min(ad, 1) * 0.94 + Math.max(ad - 1, 0) * 0.4) * sp;
-      const zz = -0.42 * Math.min(ad, 2) * sp;
-      const ry = -clamp(d * 38, -48, 48) * sp;
-      const s = 1;
+      const S = d < 0 ? SLOT.L : SLOT.R;
+      const t = Math.min(ad, 1), ex = Math.max(ad - 1, 0);
+      const tx = (S.tx * t + sg * ex * 0.55) * sp;
+      const ty = (S.ty * t + ex * 0.12) * sp;
+      const r = (S.r * t + sg * ex * 6) * sp;
+      const sx = 1 + ((S.sx - 1) * t - ex * 0.06) * sp;
+      const sy = 1 + ((S.sy - 1) * t - ex * 0.06) * sp;
+      const k = S.k * t * sp;
       const edge = N >= 3 ? (N / 2 - ad) / 0.5 : 1;
       const o = clamp(Math.min(edge, (2.7 - ad) / 0.7), 0, 1);
-      card.style.setProperty("--x", x.toFixed(4));
-      card.style.setProperty("--zz", zz.toFixed(4));
-      card.style.setProperty("--ry", ry.toFixed(3));
-      card.style.setProperty("--s", s.toFixed(4));
-      card.style.setProperty("--o", o.toFixed(3));
-      card.style.setProperty("--v", (Math.min(ad, 1) * 0.26).toFixed(3));
-      card.style.setProperty("--z", String(100 - Math.round(ad * 10)));
-      card.style.visibility = o <= 0.01 ? "hidden" : "visible";
+      const st = card.style;
+      st.setProperty("--tx", tx.toFixed(4));
+      st.setProperty("--ty", ty.toFixed(4));
+      st.setProperty("--r", r.toFixed(3));
+      st.setProperty("--sx", sx.toFixed(4));
+      st.setProperty("--sy", sy.toFixed(4));
+      st.setProperty("--k", k.toFixed(3));
+      st.setProperty("--o", o.toFixed(3));
+      st.setProperty("--v", (t * 0.26).toFixed(3));
+      st.setProperty("--z", String(100 - Math.round(ad * 10)));
+      st.visibility = o <= 0.01 ? "hidden" : "visible";
     });
     const now = mod(Math.round(pos), N);
     if (now !== cur) setCurrent(now);
@@ -201,13 +212,13 @@
     const dt = now - drag.lt;
     if (dt > 0) drag.vx = (e.clientX - drag.lx) / dt;
     drag.lx = e.clientX; drag.lt = now;
-    const stepPx = track.offsetWidth * 0.94;
+    const stepPx = track.offsetWidth * 0.8;
     pos = target = drag.from - dx / stepPx;
   });
   function endDrag(e) {
     if (!drag || e.pointerId !== drag.id) return;
     if (drag.moved) {
-      const stepPx = track.offsetWidth * 0.94;
+      const stepPx = track.offsetWidth * 0.8;
       const proj = clamp(-drag.vx * 180 / stepPx, -1.5, 1.5);
       target = Math.round(pos + proj);
       justDragged = true;

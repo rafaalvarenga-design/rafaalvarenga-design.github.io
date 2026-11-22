@@ -9,7 +9,7 @@
    fundo        : imagem da moldura do card (WebP)
    imagem       : bicho recortado, PNG/WebP com fundo transparente (proporção 3:4)
    nomeImagem   : logotipo em SVG (versão para fundo colorido)
-   nomePosicao  : posição do logotipo em % do card: esquerda, topo, largura
+   nomeLargura  : largura do logotipo em % da largura do card
    mascote      : (opcional) ajuste fino do bicho em %: esquerda, topo, largura, altura, corte */
 window.FERRAMENTAS = [
   {
@@ -23,7 +23,7 @@ window.FERRAMENTAS = [
     fundo: "assets/cards/fundo-mutatu.webp",
     imagem: "assets/cards/mutatu.webp",
     nomeImagem: "assets/nomes/mutatu-alt.svg",
-    nomePosicao: { esquerda: 15.832, topo: 9.691, largura: 68.178 },
+    nomeLargura: 63.933,
     mascote: { esquerda: -2.134, topo: -5.053, largura: 104.27, altura: 105.96, corte: 38.74 }
   },
   {
@@ -37,7 +37,7 @@ window.FERRAMENTAS = [
     fundo: "assets/cards/fundo-mimico.webp",
     imagem: "assets/cards/mimico.webp",
     nomeImagem: "assets/nomes/mimico-alt.svg",
-    nomePosicao: { esquerda: 17.762, topo: 11.313, largura: 64.319 }
+    nomeLargura: 60.313
   },
   {
     nome: "Sab.IA",
@@ -50,6 +50,6 @@ window.FERRAMENTAS = [
     fundo: "assets/cards/fundo-sabia.webp",
     imagem: "assets/cards/sabia.webp",
     nomeImagem: "assets/nomes/sabia-alt.svg",
-    nomePosicao: { esquerda: 22.759, topo: 11.124, largura: 54.325 }
+    nomeLargura: 50.940
   }
 ];
